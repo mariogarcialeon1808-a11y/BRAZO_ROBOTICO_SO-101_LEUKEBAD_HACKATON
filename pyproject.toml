@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "so101er"
+version = "0.2.0"
+description = "Brazos SO-101 que explican una obra con expresión corporal, dirigidos por Gemini Robotics ER 2"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "opencv-python>=4.9",
+    "prompt_toolkit>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+integrado = ["google-genai>=3.3", "sounddevice>=0.5", "mujoco==3.3.7", "pyserial>=3.5", "faster-whisper>=1.2", "av>=11"]
+ia = ["google-genai>=3.3"]     # ER 2 y Gemini 3.8 Live
+voz = ["sounddevice"]          # altavoz y micrófono para la voz en directo
+mujoco = ["mujoco>=3.3"]       # simulación 3D en tiempo real
+conversacion = ["anthropic>=2.8", "websockets>=15", "pynput>=1.8", "sounddevice"]   # so101er hablar
+real = ["lerobot>=0.7"]        # Fase 3 (requiere Python >= 3.12)
+
+[project.scripts]
+so101er = "so101er.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+so101er = ["predeterminado.toml", "cinematica/so101.urdf", "mujoco_modelo/*.xml", "mujoco_modelo/assets/*.stl",
+           "sincronia/voz_windows.ps1", "cara/web/*.html", "cara/web/js/*.js"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+

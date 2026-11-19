@@ -1,0 +1,29 @@
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+*.log
+.cara-profile/
+registros/
+# Datos y derivados con licencia propia: almacenamiento local, no redistribución.
+datos/referencias/
+salidas/
+
+datos/modelos/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+config/calibracion_rangos_usb*.json*
+config/calibracion_izq*.json*
+config/calibracion_der*.json*
+config/alineacion_COM*.json*
+config/montaje_dual*.json*
+
+# Imágenes de la obra e instantáneas de la cámara: datos locales, no se suben.
+obra/*
+!obra/.gitkeep
