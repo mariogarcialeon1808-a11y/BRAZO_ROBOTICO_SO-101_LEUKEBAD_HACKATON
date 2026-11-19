@@ -1,0 +1,152 @@
+# Configuración de so101er. Unidades: milímetros, grados, segundos.
+# Mundo: x a la derecha, y hacia delante (hacia la obra), z hacia arriba; la mesa es z = 0.
+
+[general]
+modo = "dos"            # "uno" o "dos"
+brazo = "izq"           # brazo usado en modo "uno"
+simulado = true         # true: sin hardware
+frecuencia_hz = 100     # ciclos de control por segundo y por brazo
+
+[brazos.izq]
+puerto = ""                       # p. ej. "COM7" o "/dev/ttyACM0" (Fase 3)
+base_mm = [-220.0, 0.0, 0.0]      # posición de la base en el mundo
+orientacion_grados = 90.0         # 90 = el brazo mira hacia +y (hacia la obra)
+signo = [1, 1, 1, 1, 1]           # correspondencia modelo ↔ LeRobot (Fase 3)
+desfase_grados = [0, 0, 0, 0, 0]
+
+[brazos.der]
+puerto = ""
+base_mm = [220.0, 0.0, 0.0]
+orientacion_grados = 90.0
+signo = [1, 1, 1, 1, 1]
+desfase_grados = [0, 0, 0, 0, 0]
+
+[cuadro]
+# Tres esquinas de la obra en el mundo. Por defecto: plano vertical delante de los brazos.
+sup_izq = [-350.0, 520.0, 560.0]
+sup_der = [350.0, 520.0, 560.0]
+inf_izq = [-350.0, 520.0, 120.0]
+separacion_min_mm = 60.0          # ningún punto del brazo se acerca más que esto a la obra
+imagen = ""                       # ruta a una imagen; vacío = cuadro sintético
+
+[limites]
+#                    pan  hombro codo muñeca giro pinza(%)
+velocidad_grados_s = [150, 150, 150, 180, 240, 300]
+aceleracion_grados_s2 = [600, 600, 600, 800, 1200, 1500]
+tiron_grados_s3 = [8000, 8000, 8000, 10000, 15000, 20000]
+altura_min_mm = 25.0              # altura mínima de muñeca y pinza sobre la mesa
+distancia_min_brazos_mm = 70.0    # entre cualquier par de eslabones de los dos brazos
+temperatura_max_c = 60.0
+carga_max = 0.85                  # fracción de la carga máxima del motor
+error_seguimiento_max_grados = 12.0
+
+[zona_compartida]
+activa = false                    # true: solo un brazo a la vez entre x_min y x_max
+x_min_mm = -60.0
+x_max_mm = 60.0
+
+[movimiento]
+estilo = "neutro"
+respiracion_grados = 1.8          # amplitud de la respiración en reposo
+exageracion = 1.9                 # las poses que compone ER 2 se amplían este factor (1 = tal cual)
+respiracion_periodo_s = 4.6
+simpatia = 0.12                   # cuánto arrastra un brazo al otro (0 = nada), como un torso
+ritmo_max = 1.4                   # cuánto puede acelerar un brazo para alcanzar a la voz
+reposo = { alcance = 0.35, azimut = 12.0, altura = 0.28, elevacion = -25.0, giro = 0.0, pinza = 35.0 }
+
+[voz]
+proveedor = "local"               # Quién pone la voz. En todos menos "live", el texto lo escribe ER 2.
+                                  # "local": voz instalada en Windows (sin red, inmediata, sincronía exacta)
+                                  # "tts": Gemini TTS (más natural, pero tarda unos 10 s por frase)
+                                  # "muda": solo subtítulos
+                                  # "live": habla Gemini 3.8 Live (altavoz y micrófono; experimental)
+voz_local = ""                    # nombre de la voz de Windows; vacío = la primera en español
+ritmo_voz_local = -1              # de -10 (lenta) a 10 (rápida)
+volumen = 2.5                     # ganancia de la voz sintetizada (1 = tal cual; con limitador suave)
+entrada_max_s = 2.0               # la voz espera como mucho esto a que el primer gesto se prepare
+modelo_tts = "gemini-3.8-flash-tts"
+silabas_por_segundo = 4.6
+adelanto_gesto_s = 0.08           # perfil histórico
+adelanto_expresivo_s = 0.22       # aplicación integrada: ápice antes de la palabra
+compensacion_s = 0.0              # retraso fijo de altavoz y motores
+pausa_entre_frases_s = 0.5
+espera_al_cuerpo_s = 1.5          # voz muda: la frase siguiente espera a que acabe el movimiento (tope)
+# Solo con proveedor = "live":
+modelo_live = "gemini-3.8-live"
+nombre_voz = "Kore"
+retardo_s = 9.0                   # la voz suena con este retardo para que ER 2 prepare los gestos.
+                                  # Regla: duración de un fragmento + tiempo de respuesta de ER 2
+palabras_por_fragmento = 7        # la voz se pasa a ER 2 en fragmentos de hasta estas palabras
+microfono = true
+microfono_mientras_habla = false  # false: el micrófono se silencia mientras suena la voz (evita el eco)
+tiempos_de_palabra = false        # true: pedir a la API el tiempo exacto de cada palabra
+
+[real]
+# Velocidad de las articulaciones de los brazos REALES, en grados por segundo (20 a 150).
+# La simulación usa 150. Con 20 los gestos amplios tardan casi un minuto y no caben en la voz.
+# Súbela por pasos (60, 90, 150) y con la mano cerca de PARAR la primera vez de cada paso.
+velocidad_grados_s = 110
+# Al acabar cada respuesta los brazos vuelven solos a punto cero (plegados, la postura de la alineación), a 30°/s
+# como mucho, y la petición siguiente los despliega mientras la IA piensa. false: se quedan en la postura de trabajo.
+punto_cero_tras_respuesta = true
+
+[conversacion]
+# `so101er hablar`: un chatbot ve la foto y habla (voz de ElevenLabs); ER 2 mueve los brazos.
+env = "C:/Users/PC/Downloads/robot-guia-bot/robot-guia-bot/.env"   # de aquí se leen las claves que falten
+idioma = "es"                     # "es" o "en" (también con --idioma, o /idioma durante la conversación)
+modelo_chat = "haiku"             # "haiku" (rápido) o "sonnet" (más fino, algo más lento)
+voz_modelo = "eleven_flash_v2_5"
+volumen = 1.4                     # ganancia de la voz (1 = tal cual)
+er2_razonamiento = "minimal"      # con "minimal" ER 2 reacciona en torno a 1 s
+er2_imagen_px = 512               # ancho de la imagen que se manda a ER 2
+por_frases = true                 # aplicación integrada: hablar frase a frase, empezando por la primera (false = todo a la vez)
+
+[conversacion.voces]
+# Voz de ElevenLabs (Voice ID) para cada idioma de la conversación. Un idioma sin línea aquí usa la
+# variable ELEVENLABS_VOICE_ID_<CÓDIGO> (ES, EN, DE, FR, ZH) y, si tampoco existe, la voz general
+# ELEVENLABS_VOICE_ID. Para volver a una sola voz, borra las líneas.
+es = "FFHOCNsj5TuX6tRgEswC"
+en = "cuTixVvCOWFxeH3oGE9m"
+de = "1J0wWp4zPQIvsK7Xwh34"
+fr = "bts16wA7hWMfnlEIHuRo"
+zh = "9DMBSOAnMDPiFAsz1ZGK"
+
+[camara]
+# Dónde está la cámara de verdad, la que da el vídeo en directo del cuadro (indicado por el operador el 16-11-2026):
+# centrada entre los dos brazos (a 25 cm de cada uno) y a 32 cm de altura. Aún no se usa para calcular nada.
+posicion_mm = [0.0, 0.0, 320.0]   # x entre las bases (0 = en medio), y hacia el cuadro (sin indicar: 0), z altura
+indice = 0
+ancho = 1280
+alto = 720
+fps = 30
+
+[er2]
+composicion = "libre"             # "libre": ER 2 compone cada movimiento punto a punto.
+                                  # "biblioteca": modo anterior, ER 2 elige gestos con nombre
+modelo_directo = "gemini-robotics-er-2-streaming-preview"
+modelo_estandar = "gemini-robotics-er-2-preview"
+modelo_narrador = "gemini-3.8-flash"
+razonamiento = "medium"           # modo estándar (Interactions API)
+razonamiento_directo = "low"      # modo en directo: bajo, para que la primera frase llegue antes
+fotogramas_por_segundo = 1.0
+
+# Estilos propios o ajustes de los incluidos (neutro, solemne, entusiasta, misterioso,
+# didactico, tierno, dramatico). Cada valor: amplitud 0..1, peso/tiempo/espacio/flujo -1..1,
+# curvatura 0..1, tension 0..1.
+[estilos.sereno]
+amplitud = 0.55
+peso = -0.3
+tiempo = -0.8
+espacio = -0.2
+flujo = -0.5
+curvatura = 0.6
+tension = 0.15
+
+
+# Cara del robot (docs/CARA.md): ojos, subtítulos y la imagen en una página local. Solo salida.
+[cara]
+activa = true
+puerto = 8765
+desfase_ms = 0                    # positivo: subtítulos y boca más tarde respecto a la voz
+imagen = true                     # tarjeta con la imagen y la zona de cada frase
+espejo = false                    # true: la cara mira al lado contrario (público de frente, brazos cruzados respecto a ella)

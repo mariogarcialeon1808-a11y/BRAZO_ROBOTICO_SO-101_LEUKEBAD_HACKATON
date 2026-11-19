@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es-ES">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cara del robot</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --said: #ffffff;
+    --now: #ffd23f;
+    --next: rgba(255, 255, 255, 0.38);
+    --user: #7fd3ff;
+    --sub-size: clamp(36px, 6.1vh, 72px); /* 66 px a 1080p */
+    --user-size: clamp(20px, 3vh, 36px);
+    --entra: 320ms cubic-bezier(.2, .7, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #000; color: var(--said);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    cursor: none; user-select: none;
+  }
+  body.debug { cursor: default; }
+
+  /* Zona superior (70 %): la cara, que se estrecha hacia la izquierda cuando entra la imagen. */
+  #face { position: absolute; left: 0; top: 0; width: 100vw; height: 70vh; display: block; transition: width var(--entra); }
+  body.con-obra #face { width: 40vw; }
+
+  #card {
+    position: absolute; top: 3vh; right: 3vw; width: 55vw; height: 64vh;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateX(6vw) scale(.98); pointer-events: none;
+    transition: opacity var(--entra), transform var(--entra);
+  }
+  body.con-obra #card { opacity: 1; transform: none; }
+  #card.rapido { transition-duration: 120ms; }
+  #frame {
+    position: relative; line-height: 0; border-radius: 18px; overflow: hidden;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .08), 0 0 50px rgba(60, 220, 255, .10);
+  }
+  #obra { display: block; max-width: 55vw; max-height: 64vh; }
+  #marca { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* Franja inferior (30 %): la pregunta y los subtítulos. La imagen nunca baja hasta aquí. */
+  #strip {
+    position: absolute; left: 0; bottom: 0; width: 100vw; height: 30vh;
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
+    padding-top: 1.2vh;
+  }
+  #user {
+    min-height: calc(var(--user-size) * 1.3);
+    font-size: var(--user-size); color: var(--user); font-weight: 500;
+    max-width: 88vw; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    opacity: 0; transition: opacity 250ms;
+  }
+  #user.show { opacity: 1; }
+  #subs {
+    width: 100vw; padding: 0 6vw;
+    font-size: var(--sub-size); font-weight: 600; line-height: 1.22;
+    text-align: center; transition: opacity 600ms;
+    height: calc(var(--sub-size) * 1.22 * 2 + 4px); overflow: hidden;
+  }
+  #subs.fading { opacity: 0; }
+  #subs .line { white-space: nowrap; }
+  #subs .w { transition: color 90ms; }
+  #subs .said { color: var(--said); }
+  #subs .now { color: var(--now); }
+  #subs .next { color: var(--next); }
+
+  #debug {
+    position: absolute; top: 12px; left: 12px; z-index: 10; min-width: 260px;
+    background: rgba(20, 24, 30, .9); border: 1px solid #333; border-radius: 10px;
+    padding: 10px 12px; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; color: #ddd;
+  }
+  #debug b { color: var(--now); }
+  #debug .off { color: #f66; }
+</style>
+</head>
+<body>
+<canvas id="face"></canvas>
+<div id="card"><div id="frame"><img id="obra" alt=""><svg id="marca"></svg></div></div>
+<div id="strip">
+  <div id="user" aria-live="polite"></div>
+  <div id="subs" aria-live="polite"></div>
+</div>
+<div id="debug" hidden></div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
