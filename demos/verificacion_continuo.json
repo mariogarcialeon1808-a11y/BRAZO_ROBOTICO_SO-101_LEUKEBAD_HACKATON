@@ -1,0 +1,69 @@
+{
+  "acentos": 5,
+  "huecos_antes_s": 14.34603242940794,
+  "huecos_despues_s": 0.0,
+  "planes": [
+    {
+      "inicio_s": -2.0841795626456983,
+      "duracion_s": 7.03465269285854,
+      "tipo": "extension",
+      "brazo": "izq"
+    },
+    {
+      "inicio_s": 4.950473130212842,
+      "duracion_s": 2.2931465629187917,
+      "tipo": "extension",
+      "brazo": "izq"
+    },
+    {
+      "inicio_s": 7.243619693131634,
+      "duracion_s": 2.2931465629187917,
+      "tipo": "extension",
+      "brazo": "der"
+    },
+    {
+      "inicio_s": 9.536766256050425,
+      "duracion_s": 6.036955777622113,
+      "tipo": "extension",
+      "brazo": "der"
+    },
+    {
+      "inicio_s": 15.573722033672539,
+      "duracion_s": 3.070750361254545,
+      "tipo": "extension",
+      "brazo": "izq"
+    },
+    {
+      "inicio_s": 18.644472394927085,
+      "duracion_s": 3.070750361254545,
+      "tipo": "extension",
+      "brazo": "der"
+    },
+    {
+      "inicio_s": 21.71522275618163,
+      "duracion_s": 5.293981795960799,
+      "tipo": "senalar",
+      "brazo": "der"
+    },
+    {
+      "inicio_s": 27.009204552142428,
+      "duracion_s": 6.391136619173506,
+      "tipo": "extension",
+      "brazo": "izq"
+    },
+    {
+      "inicio_s": 33.40034117131594,
+      "duracion_s": 2.0333254953507307,
+      "tipo": "extension",
+      "brazo": "izq"
+    }
+  ],
+  "subalimentaciones_audio": 0,
+  "error_control": null,
+  "errores": [],
+  "reposo_error": {
+    "izq": 0.087890625,
+    "der": 0.17578125
+  },
+  "jitter_p99_ms": 11.861932005919519
+}
