@@ -1,0 +1,5 @@
+{
+  "q_modelo": [-3.2, -100.0, 96.8, -95.0, 2.8, 0.0],
+  "origen": "Postura de referencia indicada por el usuario en la captura del modelo",
+  "es_calibracion_de_encoders": false
+}

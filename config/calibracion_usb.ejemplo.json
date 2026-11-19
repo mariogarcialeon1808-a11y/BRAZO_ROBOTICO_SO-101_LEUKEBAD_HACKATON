@@ -1,0 +1,8 @@
+{
+  "verificada": false,
+  "ids": [1,2,3,4,5,6],
+  "cero_raw": [2048,2048,2048,2048,2048],
+  "signo": [1,1,1,1,1],
+  "pinza_raw": [1000,2000],
+  "aviso": "EJEMPLO SIN CALIBRAR: no usar estos valores en los brazos reales. Medir correspondencia URDF/encoder, extremos de pinza y marcos de ambas bases."
+}
