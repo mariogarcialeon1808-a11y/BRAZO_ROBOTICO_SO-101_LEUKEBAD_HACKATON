@@ -1,0 +1,6849 @@
+{
+ "version": 1,
+ "nota": "Registro expresivo de so101er: movimientos y conexiones concepto → movimiento. El programa lee de aquí la biblioteca de movimientos.",
+ "fuentes": [
+  {
+   "id": "propio",
+   "nombre": "Diseño propio para el SO-101",
+   "aporta": "La geometría de cada movimiento: posturas clave que caben en un brazo de 5 articulaciones y pinza, sin dedos.",
+   "estado": "Comprobado contra el motor de gestos; sin ver en los brazos."
+  },
+  {
+   "id": "seg",
+   "nombre": "SeG (Semantic Gesticulator)",
+   "url": "https://github.com/LuMen-ze/Semantic-Gesticulator-Official",
+   "aporta": "El significado: 208 gestos humanos con su descripción y sus contextos de uso. Cada movimiento cita el gesto de SeG del que toma el sentido, con su índice.",
+   "estado": "Lista completa y dos clips en local. Licencia de investigación no comercial, sin redistribución."
+  },
+  {
+   "id": "beat2",
+   "nombre": "BEAT2",
+   "url": "https://huggingface.co/datasets/haiyangliu0/BEAT2",
+   "aporta": "El ritmo: cómo se reparte un movimiento en el tiempo al hablar.",
+   "estado": "Un clip en local, convertido a perfil de ritmo."
+  },
+  {
+   "id": "mmconv",
+   "nombre": "MM-Conv / SGS-HSI 2026",
+   "url": "https://huggingface.co/datasets/hsi-workshop/referential-gesture-challenge",
+   "aporta": "Los gestos referenciales: señalar algo concreto del entorno mientras se conversa.",
+   "estado": "Un clip en local."
+  },
+  {
+   "id": "robogesture",
+   "nombre": "RoboGesture (ECCV 2026)",
+   "url": "https://arxiv.org/abs/2608.28693",
+   "aporta": "El método, no los datos: dos capas (gesto con significado sobre movimiento rítmico), el gesto empieza antes que su palabra, y cada clase se valida en el robot y se descarta si no es realizable.",
+   "estado": "Es para un humanoide Unitree G1 con manos de dedos (41 articulaciones). El artículo no publica la lista de sus más de 300 clases ni dice que los datos estén disponibles; parte de SeG, que sí tenemos."
+  },
+  {
+   "id": "smolvla",
+   "nombre": "SmolVLA (LeRobot)",
+   "url": "https://huggingface.co/docs/lerobot/smolvla",
+   "aporta": "El formato de una política entrenada: una frase de tarea por movimiento y unas 50 demostraciones por tarea. Cada movimiento del registro lleva ya su frase.",
+   "estado": "No es un conjunto de datos de gestos: es un modelo de 450 M de parámetros entrenado para manipular objetos. No se usa para ejecutar; ver el protocolo."
+  }
+ ],
+ "papeles": [
+  {
+   "id": "acompana",
+   "descripcion": "Se mueve un poco con el gesto del principal y vuelve, como hoy. No añade significado."
+  },
+  {
+   "id": "espejo",
+   "descripcion": "Hace el mismo movimiento en simetría: los dos forman un solo gesto."
+  },
+  {
+   "id": "ancla",
+   "descripcion": "Sostiene una referencia (un punto, una altura, una mitad) mientras el principal se mueve respecto a ella."
+  },
+  {
+   "id": "prepara",
+   "descripcion": "Va ya a la postura de salida del gesto siguiente, para que empiece a tiempo."
+  },
+  {
+   "id": "contrapunto",
+   "descripcion": "Hace otro movimiento con significado propio que completa al principal."
+  },
+  {
+   "id": "libre",
+   "descripcion": "El gesto es de un solo brazo y el otro no añade significado. Queda disponible: prepara el gesto siguiente si ya se conoce; si no, acompaña o descansa (reglas R17 a R19 del protocolo)."
+  }
+ ],
+ "familias": [
+  {
+   "id": "D",
+   "nombre": "Deícticos: señalar y recorrer",
+   "descripcion": "Dicen dónde: un punto, una zona o un trayecto de la imagen, o una dirección del espacio real."
+  },
+  {
+   "id": "E",
+   "nombre": "Espaciales: dibujar en el aire",
+   "descripcion": "Un brazo dibuja la forma o el trayecto de lo que se cuenta: una calle, una cuesta, un río, una rotonda."
+  },
+  {
+   "id": "B",
+   "nombre": "Bimanuales: los dos brazos componen",
+   "descripcion": "Los dos brazos forman juntos un solo significado: tamaño, unión, reparto, comparación."
+  },
+  {
+   "id": "M",
+   "nombre": "Discurso y trato: lo que no es un lugar",
+   "descripcion": "Cantidad, tiempo, permiso, cortesía y marcha de la conversación. Son movimientos cortos, cerca del cuerpo."
+  }
+ ],
+ "dominios": [
+  {
+   "id": "CV",
+   "nombre": "Conversación",
+   "descripcion": "Trato y marcha del diálogo: saludar, escuchar, confirmar, ordenar lo que se dice."
+  },
+  {
+   "id": "CA",
+   "nombre": "Cantidad y medida",
+   "descripcion": "Cuánto, de qué tamaño, más o menos que."
+  },
+  {
+   "id": "TI",
+   "nombre": "Tiempo",
+   "descripcion": "Cuándo, cuánto dura, en qué orden."
+  },
+  {
+   "id": "ES",
+   "nombre": "Espacio y orientación",
+   "descripcion": "Dónde está algo respecto a quien escucha o a otra cosa."
+  },
+  {
+   "id": "DI",
+   "nombre": "Direcciones por la calle",
+   "descripcion": "Cómo llegar: tramos, giros, cruces, destino."
+  },
+  {
+   "id": "UR",
+   "nombre": "Entorno urbano",
+   "descripcion": "Lo que hay en una ciudad y cómo es."
+  },
+  {
+   "id": "RU",
+   "nombre": "Entorno rural",
+   "descripcion": "Paisaje, relieve, tiempo atmosférico."
+  },
+  {
+   "id": "VI",
+   "nombre": "Información vial y transporte",
+   "descripcion": "Estado del tráfico, normas, transporte público."
+  },
+  {
+   "id": "SP",
+   "nombre": "Servicios públicos y atención al ciudadano",
+   "descripcion": "Trámites, horarios, requisitos, avisos."
+  },
+  {
+   "id": "IM",
+   "nombre": "Imágenes y mapas",
+   "descripcion": "Describir la imagen o el mapa que se muestra."
+  },
+  {
+   "id": "CU",
+   "nombre": "Cualidades y estados",
+   "descripcion": "Cómo es o cómo está algo."
+  }
+ ],
+ "primitivas": [
+  {
+   "id": "D01",
+   "nombre": "señalar un punto",
+   "familia": "D",
+   "descripcion": "Apunta a un punto de la imagen y lo sostiene.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER POINT (1211)",
+    "mmconv"
+   ],
+   "instruccion": "point with the {brazo} arm at the given spot of the picture and hold",
+   "existente": "senalar",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": false
+  },
+  {
+   "id": "D02",
+   "nombre": "barrer una región",
+   "familia": "D",
+   "descripcion": "Recorre de lado a lado una zona de la imagen.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER SCAN (1221)"
+   ],
+   "instruccion": "sweep the {brazo} arm across the given region of the picture",
+   "existente": "region",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": false
+  },
+  {
+   "id": "D03",
+   "nombre": "trazar una ruta",
+   "familia": "D",
+   "descripcion": "Sigue sobre la imagen un trayecto de varios puntos: una calle, un recorrido en el mapa.",
+   "origen": [
+    "propio",
+    "mmconv"
+   ],
+   "instruccion": "trace with the {brazo} arm the route through the given picture points",
+   "con_motor_actual": "encadenar señalamientos a los puntos del trayecto (como «barrer una región», con puntos libres)",
+   "motor": {
+    "estado": "motor"
+   },
+   "grafico": false
+  },
+  {
+   "id": "D04",
+   "nombre": "rodear una zona",
+   "familia": "D",
+   "descripcion": "Dibuja el contorno de una zona de la imagen.",
+   "origen": [
+    "propio",
+    "seg:HANDS DRAW-OUTLINE (1301)"
+   ],
+   "instruccion": "outline with the {brazo} arm the given area of the picture",
+   "con_motor_actual": "señalamientos encadenados a las esquinas de la zona",
+   "motor": {
+    "estado": "motor"
+   },
+   "grafico": false
+  },
+  {
+   "id": "D05",
+   "nombre": "saltar entre puntos",
+   "familia": "D",
+   "descripcion": "Apunta a varios puntos de la imagen uno tras otro, con una parada breve en cada uno.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER HOP (1230)"
+   ],
+   "instruccion": "point with the {brazo} arm at each given picture spot in turn, pausing on each",
+   "con_motor_actual": "señalamientos sucesivos con sostenido corto",
+   "motor": {
+    "estado": "motor"
+   },
+   "grafico": false
+  },
+  {
+   "id": "D06",
+   "nombre": "indicar hacia un lado",
+   "familia": "D",
+   "descripcion": "Extiende el brazo hacia su lado, fuera de la imagen: «a la izquierda», «a la derecha».",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER POINT (1211)"
+   ],
+   "instruccion": "extend the {brazo} arm out to its side and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 300,
+      "az": 62,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": 0,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.1,
+     "der": 3.1
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D07",
+   "nombre": "indicar al frente",
+   "familia": "D",
+   "descripcion": "Extiende el brazo recto hacia delante.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGERS POINT-FORWARD (1212)"
+   ],
+   "instruccion": "extend the {brazo} arm straight ahead and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 350,
+      "az": 0,
+      "z": 240,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": 5,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.7,
+     "der": 3.7
+    },
+    "apice_s": {
+     "izq": 1.6,
+     "der": 1.6
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D08",
+   "nombre": "indicar arriba",
+   "familia": "D",
+   "descripcion": "Sube la pinza apuntando al techo.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER RAISE-SKY (3102)"
+   ],
+   "instruccion": "raise the {brazo} arm pointing up and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 170,
+      "az": 5,
+      "z": 420,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": 70,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 2.3,
+     "der": 2.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D09",
+   "nombre": "indicar abajo",
+   "familia": "D",
+   "descripcion": "Baja la pinza apuntando al suelo.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "lower the {brazo} arm pointing down and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 230,
+      "az": 5,
+      "z": 75,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": -60,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.0,
+     "der": 3.0
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D10",
+   "nombre": "aquí mismo",
+   "familia": "D",
+   "descripcion": "Dos toques cortos hacia abajo, cerca: «aquí», «en este punto».",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "tap twice downwards close in front with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 200,
+      "az": -8,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -50
+     },
+     {
+      "r": 200,
+      "az": -8,
+      "z": 105,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -55
+     },
+     {
+      "r": 200,
+      "az": -8,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -50
+     },
+     {
+      "r": 200,
+      "az": -8,
+      "z": 105,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -55,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.2,
+     "der": 4.2
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D11",
+   "nombre": "allí, lejos",
+   "familia": "D",
+   "descripcion": "El brazo se alarga y sube hacia fuera: «al fondo», «a lo lejos».",
+   "origen": [
+    "propio",
+    "seg:ARM ENDEAVOR (2302)"
+   ],
+   "instruccion": "reach far and slightly up with the {brazo} arm and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 320,
+      "az": 12,
+      "z": 290,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": 20
+     },
+     {
+      "r": 365,
+      "az": 28,
+      "z": 320,
+      "giro": 0.0,
+      "pinza": 15,
+      "elev": 28,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D12",
+   "nombre": "hacia quien escucha",
+   "familia": "D",
+   "descripcion": "Pinza abierta hacia el centro, donde está la persona: «usted», «su caso».",
+   "origen": [
+    "propio",
+    "seg:FOREFINGERS POINT-FORWARD (1212)"
+   ],
+   "instruccion": "open the gripper and present the {brazo} arm towards the listener",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 285,
+      "az": -25,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70,
+      "elev": 0,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.4,
+     "der": 3.4
+    },
+    "apice_s": {
+     "izq": 1.5,
+     "der": 1.5
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "D13",
+   "nombre": "hacia sí mismo",
+   "familia": "D",
+   "descripcion": "Recoge la pinza hacia el propio cuerpo: «yo», «nosotros», «este servicio».",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "draw the {brazo} gripper back towards the robot body and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 125,
+      "az": -12,
+      "z": 225,
+      "giro": 0.0,
+      "pinza": 30,
+      "elev": 55,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 2.0,
+     "der": 2.0
+    },
+    "apice_s": {
+     "izq": 0.8,
+     "der": 0.8
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "E01",
+   "nombre": "abanico horizontal",
+   "familia": "E",
+   "descripcion": "Arco amplio a media altura: un paisaje, una extensión.",
+   "origen": [
+    "propio",
+    "seg:ARMS ENCOMPASS (3032)"
+   ],
+   "instruccion": "sweep the {brazo} arm in a wide horizontal arc",
+   "existente": "paisaje",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": true
+  },
+  {
+   "id": "E02",
+   "nombre": "abanico elevado",
+   "familia": "E",
+   "descripcion": "Arco amplio con la pinza levantada: cielo, horizonte.",
+   "origen": [
+    "propio",
+    "seg:ARMS RAISE TOWORDS-SKY (2001)"
+   ],
+   "instruccion": "sweep the {brazo} arm in a wide raised arc",
+   "existente": "cielo",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": true
+  },
+  {
+   "id": "E03",
+   "nombre": "línea recta",
+   "familia": "E",
+   "descripcion": "Recta corta con la pinza paralela al trayecto.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "draw a short straight line with the {brazo} arm",
+   "existente": "camino",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": true
+  },
+  {
+   "id": "E04",
+   "nombre": "avanzar recto",
+   "familia": "E",
+   "descripcion": "De cerca hacia delante: «siga recto», «continúe».",
+   "origen": [
+    "propio",
+    "seg:PALM THRUST (2113)"
+   ],
+   "instruccion": "move the {brazo} arm straight forward from near to far",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 195,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0
+     },
+     {
+      "r": 340,
+      "az": 0,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.3,
+     "der": 4.3
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E05",
+   "nombre": "girar hacia fuera",
+   "familia": "E",
+   "descripcion": "Avanza y dobla hacia el lado del brazo: «gire a la izquierda/derecha».",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move the {brazo} arm forward and then turn outwards",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 215,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0
+     },
+     {
+      "r": 320,
+      "az": 5,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0
+     },
+     {
+      "r": 315,
+      "az": 58,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.1,
+     "der": 5.1
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E06",
+   "nombre": "girar hacia dentro",
+   "familia": "E",
+   "descripcion": "Avanza y dobla hacia el centro.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move the {brazo} arm forward and then turn inwards",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 215,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0
+     },
+     {
+      "r": 320,
+      "az": 0,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0
+     },
+     {
+      "r": 300,
+      "az": -42,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 40,
+      "elev": 0,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E07",
+   "nombre": "rotonda",
+   "familia": "E",
+   "descripcion": "Círculo horizontal completo.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER SPIN (2310)"
+   ],
+   "instruccion": "draw a horizontal circle with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 230,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 26,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 310,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": -26,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 230,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E08",
+   "nombre": "subir",
+   "familia": "E",
+   "descripcion": "Línea vertical de abajo arriba: cuesta, aumento, planta superior.",
+   "origen": [
+    "propio",
+    "seg:HANDS RISE (3010)"
+   ],
+   "instruccion": "raise the {brazo} arm in a vertical line",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 245,
+      "az": 10,
+      "z": 120,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 245,
+      "az": 10,
+      "z": 360,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.5,
+     "der": 3.5
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E09",
+   "nombre": "bajar",
+   "familia": "E",
+   "descripcion": "Línea vertical de arriba abajo: descenso, bajada, reducción.",
+   "origen": [
+    "propio",
+    "seg:PALM LOWER (2321)",
+    "seg:ARMS DESCEND (2220)"
+   ],
+   "instruccion": "lower the {brazo} arm in a vertical line",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 245,
+      "az": 10,
+      "z": 360,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 245,
+      "az": 10,
+      "z": 120,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.3,
+     "der": 3.3
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E10",
+   "nombre": "ondular",
+   "familia": "E",
+   "descripcion": "Avanza de lado subiendo y bajando: río, colinas, oleaje.",
+   "origen": [
+    "propio",
+    "seg:HAND WOBBLE (2011)"
+   ],
+   "instruccion": "move the {brazo} arm sideways in a wave",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": -25,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": -5,
+      "z": 245,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": 15,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": 35,
+      "z": 245,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": 55,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E11",
+   "nombre": "zigzag",
+   "familia": "E",
+   "descripcion": "Avanza de lado acercándose y alejándose: curvas, callejuelas.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move the {brazo} arm sideways in a zigzag",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 220,
+      "az": -12,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 305,
+      "az": 4,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 220,
+      "az": 20,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 305,
+      "az": 36,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E12",
+   "nombre": "escalones",
+   "familia": "E",
+   "descripcion": "Sube por tramos: plantas, niveles, fases.",
+   "origen": [
+    "propio",
+    "seg:HAND FALL (3012)"
+   ],
+   "instruccion": "raise the {brazo} arm in three steps",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 235,
+      "az": 15,
+      "z": 130,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 275,
+      "az": 15,
+      "z": 130,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 275,
+      "az": 15,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 310,
+      "az": 15,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 310,
+      "az": 15,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.3,
+     "der": 5.3
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E13",
+   "nombre": "arco de un lado a otro",
+   "familia": "E",
+   "descripcion": "De un punto a otro pasando por arriba: puente, conexión, traslado.",
+   "origen": [
+    "propio",
+    "seg:HAND DOORWAY-TURN (3020)"
+   ],
+   "instruccion": "draw an arch with the {brazo} arm from one side over to the other",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": -25,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 12,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 48,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.9,
+     "der": 3.9
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E14",
+   "nombre": "ida y vuelta",
+   "familia": "E",
+   "descripcion": "Va de un lado a otro y regresa.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move the {brazo} arm across and back",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": -20,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 46,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": -20,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.5,
+     "der": 4.5
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E15",
+   "nombre": "espiral ascendente",
+   "familia": "E",
+   "descripcion": "Círculos que suben: proceso, desarrollo.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER SPIRAL (1232)"
+   ],
+   "instruccion": "draw a rising spiral with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 240,
+      "az": 0,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 265,
+      "az": 16,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 285,
+      "az": 0,
+      "z": 245,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 265,
+      "az": -18,
+      "z": 275,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 245,
+      "az": 0,
+      "z": 310,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E16",
+   "nombre": "marcar una altura",
+   "familia": "E",
+   "descripcion": "Pinza abierta y quieta a una altura: «así de alto».",
+   "origen": [
+    "propio",
+    "seg:HAND MEASURE-UP (3011)",
+    "seg:HAND MEASURE-DOWN (2320)"
+   ],
+   "instruccion": "hold the {brazo} open gripper level at a given height",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 265,
+      "az": 15,
+      "z": 330,
+      "giro": 0.0,
+      "pinza": 85,
+      "elev": -5,
+      "pausa": 0.5
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.1,
+     "der": 4.1
+    },
+    "apice_s": {
+     "izq": 1.8,
+     "der": 1.8
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E17",
+   "nombre": "clavar un punto",
+   "familia": "E",
+   "descripcion": "Golpe corto hacia abajo: «justo ahí», una parada, el destino.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER BEAT (1011)"
+   ],
+   "instruccion": "bring the {brazo} arm down onto a spot with a short firm stroke",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 275,
+      "az": 10,
+      "z": 205,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 275,
+      "az": 10,
+      "z": 120,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "elev": -45,
+      "pausa": 0.25
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.6,
+     "der": 3.6
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E18",
+   "nombre": "línea transversal",
+   "familia": "E",
+   "descripcion": "Raya de lado a lado delante del cuerpo: frontera, calle que cruza.",
+   "origen": [
+    "propio",
+    "seg:PALMS BOUNDARY (2032)"
+   ],
+   "instruccion": "draw a line across from inside to outside with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 285,
+      "az": -30,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 285,
+      "az": 60,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.15
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.3,
+     "der": 4.3
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E19",
+   "nombre": "superficie llana",
+   "familia": "E",
+   "descripcion": "Pasada baja con la pinza abierta: plaza, explanada, llano.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "glide the {brazo} open gripper low and flat from inside to outside",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": -20,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 90,
+      "elev": -10
+     },
+     {
+      "r": 310,
+      "az": 42,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 90,
+      "elev": -10
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.6,
+     "der": 4.6
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "E20",
+   "nombre": "puntear una serie",
+   "familia": "E",
+   "descripcion": "Tres toques seguidos avanzando de lado: paradas, lista de sitios.",
+   "origen": [
+    "propio",
+    "seg:FOREFINGER HOP (1230)"
+   ],
+   "instruccion": "tap three spots in a row with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": -15,
+      "z": 140,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "elev": -40
+     },
+     {
+      "r": 270,
+      "az": 0,
+      "z": 195,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 140,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "elev": -40
+     },
+     {
+      "r": 270,
+      "az": 30,
+      "z": 195,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 45,
+      "z": 140,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "elev": -40
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.2,
+     "der": 5.2
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B01",
+   "nombre": "abarcar con los dos",
+   "familia": "B",
+   "descripcion": "Los dos brazos abren a la vez un abanico amplio.",
+   "origen": [
+    "propio",
+    "seg:ARMS ENCOMPASS (3032)"
+   ],
+   "instruccion": "sweep both arms outwards in a wide mirrored arc",
+   "existente": "paisaje y cielo con los dos brazos",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": true
+  },
+  {
+   "id": "B02",
+   "nombre": "medir un tamaño",
+   "familia": "B",
+   "descripcion": "Las dos pinzas se detienen enfrentadas: «así de ancho».",
+   "origen": [
+    "propio",
+    "seg:FOREFINGERS MEASURE (1213)"
+   ],
+   "instruccion": "bring both grippers inwards facing each other and hold them apart",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 300,
+      "az": -28,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 60,
+      "pausa": 0.6
+     }
+    ],
+    "otro": [
+     {
+      "r": 300,
+      "az": -28,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 60,
+      "pausa": 0.6
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.1,
+     "der": 3.1
+    },
+    "apice_s": {
+     "izq": 1.2,
+     "der": 1.2
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B03",
+   "nombre": "expandir",
+   "familia": "B",
+   "descripcion": "Del centro hacia fuera, abriendo las pinzas: grande, crecer, ampliar.",
+   "origen": [
+    "propio",
+    "seg:PALMS EXPAND (3031)"
+   ],
+   "instruccion": "move both arms from the centre outwards while opening the grippers",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 285,
+      "az": -32,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 30
+     },
+     {
+      "r": 300,
+      "az": 50,
+      "z": 240,
+      "giro": 0.0,
+      "pinza": 100,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 285,
+      "az": -32,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 30
+     },
+     {
+      "r": 300,
+      "az": 50,
+      "z": 240,
+      "giro": 0.0,
+      "pinza": 100,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B04",
+   "nombre": "juntar",
+   "familia": "B",
+   "descripcion": "De fuera hacia el centro, cerrando las pinzas: unir, concentrar, reunir.",
+   "origen": [
+    "propio",
+    "seg:ARMS FUSE (3310)",
+    "seg:HANDS UNITE (3313)"
+   ],
+   "instruccion": "move both arms from outside in to the centre while closing the grippers",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 300,
+      "az": 50,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 100
+     },
+     {
+      "r": 290,
+      "az": -28,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 20,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 300,
+      "az": 50,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 100
+     },
+     {
+      "r": 290,
+      "az": -28,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 20,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 1.9,
+     "der": 1.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B05",
+   "nombre": "dividir en dos",
+   "familia": "B",
+   "descripcion": "Los dos bajan juntos en el centro y se separan: reparto, dos partes.",
+   "origen": [
+    "propio",
+    "seg:HANDS DIVIDE (2201)"
+   ],
+   "instruccion": "bring both arms down at the centre and then apart",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 290,
+      "az": -32,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": -32,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": 30,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.2
+     }
+    ],
+    "otro": [
+     {
+      "r": 290,
+      "az": -32,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": -32,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": 30,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.5,
+     "der": 4.5
+    },
+    "apice_s": {
+     "izq": 1.2,
+     "der": 1.2
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B06",
+   "nombre": "balanza",
+   "familia": "B",
+   "descripcion": "Uno sube mientras el otro baja, y se igualan: comparar, depende.",
+   "origen": [
+    "propio",
+    "seg:PALMS BALANCE (2012)"
+   ],
+   "instruccion": "raise one arm while lowering the other, swap, then level them",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 10,
+      "z": 285,
+      "giro": 0.0,
+      "pinza": 80
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 80
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 80,
+      "pausa": 0.2
+     }
+    ],
+    "otro": [
+     {
+      "r": 260,
+      "az": 10,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 80
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 285,
+      "giro": 0.0,
+      "pinza": 80
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 80,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.5,
+     "der": 4.5
+    },
+    "apice_s": {
+     "izq": 1.5,
+     "der": 1.5
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B07",
+   "nombre": "paralelas",
+   "familia": "B",
+   "descripcion": "Los dos avanzan a la vez en líneas paralelas: avenida, carriles, orillas.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move both arms forward together in parallel lines",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 200,
+      "az": -25,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 340,
+      "az": -15,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.2
+     }
+    ],
+    "otro": [
+     {
+      "r": 200,
+      "az": -25,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 340,
+      "az": -15,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.9,
+     "der": 3.9
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B08",
+   "nombre": "cruce",
+   "familia": "B",
+   "descripcion": "Un brazo avanza recto y el otro traza una raya transversal por encima.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "move one arm straight forward while the other draws a line across above it",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 200,
+      "az": -20,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 340,
+      "az": -10,
+      "z": 185,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 280,
+      "az": -35,
+      "z": 270,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 280,
+      "az": 35,
+      "z": 270,
+      "giro": 0.0,
+      "pinza": 40,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.4,
+     "der": 4.4
+    },
+    "apice_s": {
+     "izq": 1.2,
+     "der": 1.2
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B09",
+   "nombre": "bienvenida",
+   "familia": "B",
+   "descripcion": "Los dos se abren hacia fuera, bajos y con las pinzas abiertas.",
+   "origen": [
+    "propio",
+    "seg:ARMS WELCOME (3101)"
+   ],
+   "instruccion": "open both arms outwards low with open grippers",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": -10,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 300,
+      "az": 45,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 100,
+      "pausa": 0.4
+     }
+    ],
+    "otro": [
+     {
+      "r": 260,
+      "az": -10,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 40
+     },
+     {
+      "r": 300,
+      "az": 45,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 100,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.4,
+     "der": 4.4
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B10",
+   "nombre": "celebrar",
+   "familia": "B",
+   "descripcion": "Los dos arriba y abiertos, en V.",
+   "origen": [
+    "propio",
+    "seg:ARMS RAISE V-SHAPE (3100)"
+   ],
+   "instruccion": "raise both arms up and out in a V",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 230,
+      "az": 35,
+      "z": 400,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 60,
+      "pausa": 0.4
+     }
+    ],
+    "otro": [
+     {
+      "r": 230,
+      "az": 35,
+      "z": 400,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 60,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 2.3,
+     "der": 2.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B11",
+   "nombre": "inclinarse para agradecer",
+   "familia": "B",
+   "descripcion": "Las dos pinzas bajan hacia delante un momento.",
+   "origen": [
+    "propio",
+    "seg:ARM GRATITUDE (3233)"
+   ],
+   "instruccion": "dip both grippers forward and down briefly",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": -18,
+      "z": 115,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -50,
+      "pausa": 0.4
+     }
+    ],
+    "otro": [
+     {
+      "r": 260,
+      "az": -18,
+      "z": 115,
+      "giro": 0.0,
+      "pinza": 20,
+      "elev": -50,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.2,
+     "der": 3.2
+    },
+    "apice_s": {
+     "izq": 1.4,
+     "der": 1.4
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B12",
+   "nombre": "encogerse",
+   "familia": "B",
+   "descripcion": "Los dos suben un poco hacia fuera con las pinzas abiertas: duda, «no consta».",
+   "origen": [
+    "propio",
+    "seg:HANDS SHRUG (2021)",
+    "seg:PALMS UP-LOW (2312)"
+   ],
+   "instruccion": "lift both arms slightly outwards with open grippers",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 195,
+      "az": 30,
+      "z": 240,
+      "giro": 0.0,
+      "pinza": 80,
+      "elev": 20,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 195,
+      "az": 30,
+      "z": 240,
+      "giro": 0.0,
+      "pinza": 80,
+      "elev": 20,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.4,
+     "der": 3.4
+    },
+    "apice_s": {
+     "izq": 1.5,
+     "der": 1.5
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B13",
+   "nombre": "calmar",
+   "familia": "B",
+   "descripcion": "Los dos bajan despacio, dos veces: tranquilidad, despacio.",
+   "origen": [
+    "propio",
+    "seg:PALM LOWER (2321)",
+    "seg:HAND FLOP (3331)"
+   ],
+   "instruccion": "lower both open grippers slowly, twice",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": 15,
+      "z": 255,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 175,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 90
+     }
+    ],
+    "otro": [
+     {
+      "r": 270,
+      "az": 15,
+      "z": 255,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 175,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 270,
+      "az": 15,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 90
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.1,
+     "der": 5.1
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B14",
+   "nombre": "barrera",
+   "familia": "B",
+   "descripcion": "Los dos al frente y altos, pinzas abiertas y quietas: cerrado, prohibido, peligro.",
+   "origen": [
+    "propio",
+    "seg:PALMS FRONT (2031)",
+    "seg:HANDS CROSS (2132)"
+   ],
+   "instruccion": "hold both arms forward and high with open grippers",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 300,
+      "az": -15,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 35,
+      "pausa": 0.6
+     }
+    ],
+    "otro": [
+     {
+      "r": 300,
+      "az": -15,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 35,
+      "pausa": 0.6
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 2.2,
+     "der": 2.2
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B15",
+   "nombre": "enmarcar",
+   "familia": "B",
+   "descripcion": "Cada brazo señala un extremo de una zona de la imagen y los dos sostienen.",
+   "origen": [
+    "propio",
+    "seg:HANDS DRAW-OUTLINE (1301)"
+   ],
+   "instruccion": "point each arm at one end of the given picture area and hold both",
+   "con_motor_actual": "dos señalamientos simultáneos, uno por brazo",
+   "motor": {
+    "estado": "motor"
+   },
+   "grafico": false
+  },
+  {
+   "id": "B16",
+   "nombre": "origen y trayecto",
+   "familia": "B",
+   "descripcion": "Un brazo sostiene el punto de partida mientras el otro recorre el trayecto.",
+   "origen": [
+    "propio",
+    "mmconv"
+   ],
+   "instruccion": "hold one arm on the start point while the other traces the route",
+   "con_motor_actual": "un señalamiento sostenido y una ruta en el otro brazo",
+   "motor": {
+    "estado": "motor"
+   },
+   "grafico": false
+  },
+  {
+   "id": "B17",
+   "nombre": "por un lado, por otro",
+   "familia": "B",
+   "descripcion": "Un brazo presenta hacia su lado y vuelve; después lo hace el otro.",
+   "origen": [
+    "propio",
+    "seg:PALMS REVERSE (2023)"
+   ],
+   "instruccion": "present with one arm to its side, return, then do the same with the other arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 285,
+      "az": 45,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 85,
+      "pausa": 0.3
+     },
+     "reposo",
+     "reposo"
+    ],
+    "otro": [
+     "reposo",
+     {
+      "r": 285,
+      "az": 45,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 85,
+      "pausa": 0.3
+     },
+     "reposo"
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.9,
+     "der": 5.9
+    },
+    "apice_s": {
+     "izq": 1.6,
+     "der": 1.6
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "B18",
+   "nombre": "capas",
+   "familia": "B",
+   "descripcion": "Las dos pinzas quedan una sobre otra y la de abajo pasa arriba: niveles, acumulación.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "hold both grippers at different heights, then lift the lower one above the other",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": -20,
+      "z": 150,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 270,
+      "az": -20,
+      "z": 310,
+      "giro": 0.0,
+      "pinza": 70,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 270,
+      "az": -20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 270,
+      "az": -20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 70,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.7,
+     "der": 3.7
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B19",
+   "nombre": "rodear",
+   "familia": "B",
+   "descripcion": "Los dos cierran un arco de fuera al centro: recinto, zona protegida, conjunto.",
+   "origen": [
+    "propio",
+    "seg:ARMS SURROUND (3311)",
+    "seg:HANDS SHELTER (3330)"
+   ],
+   "instruccion": "close both arms in an arc from outside round to the centre",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 300,
+      "az": 50,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 335,
+      "az": 5,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 300,
+      "az": -34,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70,
+      "pausa": 0.3
+     }
+    ],
+    "otro": [
+     {
+      "r": 300,
+      "az": 50,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 335,
+      "az": 5,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70
+     },
+     {
+      "r": 300,
+      "az": -34,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 70,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.8,
+     "der": 4.8
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "B20",
+   "nombre": "engranar",
+   "familia": "B",
+   "descripcion": "Los dos dibujan círculos a contratiempo: funcionamiento, proceso en marcha, circulación.",
+   "origen": [
+    "propio",
+    "seg:WRISTS CHANGE (1310)"
+   ],
+   "instruccion": "draw circles with both arms half a turn out of phase",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 240,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 300,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": -20,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 240,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ],
+    "otro": [
+     {
+      "r": 300,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": -20,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 240,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 270,
+      "az": 20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 300,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.4,
+     "der": 5.4
+    },
+    "apice_s": {
+     "izq": 1.2,
+     "der": 1.2
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M01",
+   "nombre": "acento",
+   "familia": "M",
+   "descripcion": "Pulso breve cerca del cuerpo, al ritmo de la voz.",
+   "origen": [
+    "propio",
+    "beat2",
+    "seg:HANDS EMPHASIS (3021)"
+   ],
+   "instruccion": "give a short beat with the {brazo} arm close to the body",
+   "existente": "acento del acompañamiento",
+   "motor": {
+    "estado": "existente"
+   },
+   "grafico": false
+  },
+  {
+   "id": "M02",
+   "nombre": "ofrecer",
+   "familia": "M",
+   "descripcion": "Pinza abierta y girada hacia arriba, baja y al frente: «aquí tiene», «puede usar».",
+   "origen": [
+    "propio",
+    "seg:PALM OFFER (3002)",
+    "seg:PALM UP (3001)"
+   ],
+   "instruccion": "present the {brazo} open gripper turned upwards, low and forward, and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 265,
+      "az": 5,
+      "z": 150,
+      "giro": 80,
+      "pinza": 90,
+      "elev": -10,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.8,
+     "der": 3.8
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M03",
+   "nombre": "alto",
+   "familia": "M",
+   "descripcion": "Brazo al frente y arriba, pinza abierta y quieta: detener, prohibido.",
+   "origen": [
+    "propio",
+    "seg:PALM HALT (2300)"
+   ],
+   "instruccion": "hold the {brazo} arm forward and up with the gripper open",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 290,
+      "az": 0,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 40,
+      "pausa": 0.6
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.4,
+     "der": 5.4
+    },
+    "apice_s": {
+     "izq": 2.4,
+     "der": 2.4
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M04",
+   "nombre": "negar",
+   "familia": "M",
+   "descripcion": "Vaivén lateral corto, dos veces: no, no disponible.",
+   "origen": [
+    "propio",
+    "seg:HAND WAG (2130)",
+    "seg:FOREFINGER WAG (2101)"
+   ],
+   "instruccion": "wag the {brazo} arm side to side twice",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": -15,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 60
+     },
+     {
+      "r": 260,
+      "az": 20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 60
+     },
+     {
+      "r": 260,
+      "az": -15,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 60
+     },
+     {
+      "r": 260,
+      "az": 20,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 60
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.9,
+     "der": 4.9
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M05",
+   "nombre": "afirmar",
+   "familia": "M",
+   "descripcion": "Dos bajadas cortas: sí, correcto, de acuerdo.",
+   "origen": [
+    "propio",
+    "seg:HAND JAB (1013)"
+   ],
+   "instruccion": "nod the {brazo} gripper down twice",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 225,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.4,
+     "der": 3.4
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M06",
+   "nombre": "enumerar",
+   "familia": "M",
+   "descripcion": "Tres paradas avanzando de lado, con la pinza un tercio más abierta en cada una: primero, segundo, tercero.",
+   "origen": [
+    "propio",
+    "seg:FINGERS 'THREE' (1201)"
+   ],
+   "instruccion": "stop the {brazo} arm at three positions moving sideways, opening the gripper a third more at each",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": -12,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 15,
+      "pausa": 0.15
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 50,
+      "pausa": 0.15
+     },
+     {
+      "r": 250,
+      "az": 32,
+      "z": 215,
+      "giro": 0.0,
+      "pinza": 90,
+      "pausa": 0.15
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.0,
+     "der": 5.0
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M07",
+   "nombre": "corte",
+   "familia": "M",
+   "descripcion": "Bajada seca con la pinza de canto: fin, límite, «hasta aquí».",
+   "origen": [
+    "propio",
+    "seg:HAND CHOP (2210)",
+    "seg:FOREARM CUT (2211)"
+   ],
+   "instruccion": "chop the {brazo} arm straight down with the gripper on edge",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": 10,
+      "z": 320,
+      "giro": 90,
+      "pinza": 20
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 150,
+      "giro": 90,
+      "pinza": 20,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.5,
+     "der": 4.5
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M08",
+   "nombre": "apartar",
+   "familia": "M",
+   "descripcion": "Del centro hacia fuera abriendo la pinza: descartar, salvo, evite.",
+   "origen": [
+    "propio",
+    "seg:FOREARM THROW-SIDE (2111)",
+    "seg:HAND FLAP (2110)"
+   ],
+   "instruccion": "flick the {brazo} arm from the centre outwards while opening the gripper",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 240,
+      "az": -10,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 30
+     },
+     {
+      "r": 300,
+      "az": 60,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 90,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.2,
+     "der": 4.2
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M09",
+   "nombre": "atraer",
+   "familia": "M",
+   "descripcion": "De lejos hacia el cuerpo cerrando la pinza: venga, traiga, recoja.",
+   "origen": [
+    "propio",
+    "seg:HANDS DRAW-BACK (3211)",
+    "seg:FINGERS BECKON (3320)"
+   ],
+   "instruccion": "pull the {brazo} arm from far back towards the body while closing the gripper",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 330,
+      "az": 0,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 90
+     },
+     {
+      "r": 170,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 10,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.2,
+     "der": 4.2
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M10",
+   "nombre": "empujar",
+   "familia": "M",
+   "descripcion": "Del cuerpo hacia delante con la pinza abierta: envíe, entregue, continúe.",
+   "origen": [
+    "propio",
+    "seg:PALM THRUST (2113)"
+   ],
+   "instruccion": "push the {brazo} arm forward from the body with the gripper open",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 180,
+      "az": 0,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 60
+     },
+     {
+      "r": 340,
+      "az": 0,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 60,
+      "pausa": 0.2
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.2,
+     "der": 4.2
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M11",
+   "nombre": "buscar",
+   "familia": "M",
+   "descripcion": "Círculo pequeño y cercano: consultando, un momento.",
+   "origen": [
+    "propio",
+    "seg:HAND ROTATE (2311)"
+   ],
+   "instruccion": "draw a small circle close to the body with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 200,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 220,
+      "az": 25,
+      "z": 250,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 240,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 220,
+      "az": -5,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 200,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.4,
+     "der": 4.4
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M12",
+   "nombre": "reloj",
+   "familia": "M",
+   "descripcion": "Círculo en vertical: duración, horario, tiempo de espera.",
+   "origen": [
+    "propio",
+    "seg:WRIST CHECK-TIME (0212)"
+   ],
+   "instruccion": "draw a vertical circle with the {brazo} arm",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": 10,
+      "z": 285,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 32,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 175,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": -12,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 285,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.1,
+     "der": 5.1
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M13",
+   "nombre": "desplazar hacia fuera",
+   "familia": "M",
+   "descripcion": "Del frente hacia el lado del brazo y sostiene: después, más adelante, lo siguiente.",
+   "origen": [
+    "propio",
+    "seg:PALMS TURN-PAGE (1222)"
+   ],
+   "instruccion": "slide the {brazo} arm from the front outwards and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 0,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": 52,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.3,
+     "der": 3.3
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M14",
+   "nombre": "desplazar hacia dentro",
+   "familia": "M",
+   "descripcion": "Del frente hacia el centro y sostiene: antes, lo anterior.",
+   "origen": [
+    "propio"
+   ],
+   "instruccion": "slide the {brazo} arm from the front inwards and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 5,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 260,
+      "az": -40,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.3,
+     "der": 3.3
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M15",
+   "nombre": "abrir la pinza",
+   "familia": "M",
+   "descripcion": "La pinza se abre del todo y se queda: abierto, disponible, empieza.",
+   "origen": [
+    "propio",
+    "seg:HAND OPEN (2020)",
+    "seg:HAND BLOOM (3212)"
+   ],
+   "instruccion": "open the {brazo} gripper fully in front and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 0
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 100,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.2,
+     "der": 5.2
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M16",
+   "nombre": "cerrar la pinza",
+   "familia": "M",
+   "descripcion": "La pinza se cierra del todo y se queda: cerrado, completo, guardado.",
+   "origen": [
+    "propio",
+    "seg:FIST CLASP (1021)",
+    "seg:FINGERS SHUT (2100)"
+   ],
+   "instruccion": "close the {brazo} gripper fully in front and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 100
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 230,
+      "giro": 0.0,
+      "pinza": 0,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.2,
+     "der": 5.2
+    },
+    "apice_s": {
+     "izq": 1.9,
+     "der": 1.9
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M17",
+   "nombre": "hablar con la pinza",
+   "familia": "M",
+   "descripcion": "La pinza se abre y se cierra dos veces arriba: llamar, preguntar, por teléfono.",
+   "origen": [
+    "propio",
+    "seg:FINGERS TALK (2330)",
+    "seg:HAND CALL (3321)"
+   ],
+   "instruccion": "open and close the {brazo} gripper twice held up",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": 10,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 30,
+      "elev": 20
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 75,
+      "elev": 20
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 30,
+      "elev": 20
+     },
+     {
+      "r": 250,
+      "az": 10,
+      "z": 265,
+      "giro": 0.0,
+      "pinza": 75,
+      "elev": 20
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 6.3,
+     "der": 6.3
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M18",
+   "nombre": "escribir",
+   "familia": "M",
+   "descripcion": "Trazo pequeño y bajo en zigzag: formulario, firma, solicitud.",
+   "origen": [
+    "propio",
+    "seg:HAND 'WRITE' (3300)"
+   ],
+   "instruccion": "make a small low scribble with the {brazo} gripper",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 232,
+      "az": 0,
+      "z": 95,
+      "giro": 0.0,
+      "pinza": 10,
+      "elev": -50
+     },
+     {
+      "r": 246,
+      "az": 8,
+      "z": 95,
+      "giro": 0.0,
+      "pinza": 10,
+      "elev": -50
+     },
+     {
+      "r": 260,
+      "az": 0,
+      "z": 95,
+      "giro": 0.0,
+      "pinza": 10,
+      "elev": -50
+     },
+     {
+      "r": 274,
+      "az": 8,
+      "z": 95,
+      "giro": 0.0,
+      "pinza": 10,
+      "elev": -50
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.2,
+     "der": 4.2
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M19",
+   "nombre": "entregar",
+   "familia": "M",
+   "descripcion": "Ofrece y cierra la pinza al avanzar: pagar, entregar un documento.",
+   "origen": [
+    "propio",
+    "seg:PALM OFFER (3002)",
+    "seg:HANDS INSERT (3302)"
+   ],
+   "instruccion": "present the {brazo} open gripper and close it while moving forward",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": 0,
+      "z": 160,
+      "giro": 80,
+      "pinza": 90,
+      "elev": -10
+     },
+     {
+      "r": 315,
+      "az": 0,
+      "z": 170,
+      "giro": 80,
+      "pinza": 10,
+      "elev": -10,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.1,
+     "der": 5.1
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M20",
+   "nombre": "saludar",
+   "familia": "M",
+   "descripcion": "Brazo arriba y vaivén: hola, adiós.",
+   "origen": [
+    "propio",
+    "seg:HAND WAVE (3123)",
+    "seg:FINGERS WAVE (3121)"
+   ],
+   "instruccion": "wave the raised {brazo} arm side to side",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 220,
+      "az": 22,
+      "z": 380,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 50
+     },
+     {
+      "r": 220,
+      "az": 42,
+      "z": 380,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 50
+     },
+     {
+      "r": 220,
+      "az": 22,
+      "z": 380,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 50
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.5,
+     "der": 5.5
+    },
+    "apice_s": {
+     "izq": 2.0,
+     "der": 2.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M21",
+   "nombre": "pedir atención",
+   "familia": "M",
+   "descripcion": "Brazo en alto y quieto, pinza abierta: atención, importante, aviso.",
+   "origen": [
+    "propio",
+    "seg:ARM RAISE HIGH-LEVEL (3110)"
+   ],
+   "instruccion": "raise the {brazo} arm high with the gripper open and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 200,
+      "az": 10,
+      "z": 415,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 65,
+      "pausa": 0.7
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.2,
+     "der": 5.2
+    },
+    "apice_s": {
+     "izq": 2.3,
+     "der": 2.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M22",
+   "nombre": "esperar",
+   "familia": "M",
+   "descripcion": "Pinza abierta al frente, baja y quieta: espere, un momento, su turno.",
+   "origen": [
+    "propio",
+    "seg:HANDS T-SIGN (2301)",
+    "seg:PALM HALT (2300)"
+   ],
+   "instruccion": "hold the {brazo} open gripper forward at mid height",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": 0,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 10,
+      "pausa": 0.8
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.7,
+     "der": 4.7
+    },
+    "apice_s": {
+     "izq": 1.9,
+     "der": 1.9
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M23",
+   "nombre": "escuchar",
+   "familia": "M",
+   "descripcion": "Se inclina un poco hacia quien habla, pinza a medias, y se queda.",
+   "origen": [
+    "propio",
+    "robogesture"
+   ],
+   "instruccion": "lean the {brazo} arm slightly towards the listener and stay",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 195,
+      "az": -10,
+      "z": 190,
+      "giro": 0.0,
+      "pinza": 50,
+      "elev": -10,
+      "pausa": 1.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.0,
+     "der": 3.0
+    },
+    "apice_s": {
+     "izq": 1.0,
+     "der": 1.0
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M24",
+   "nombre": "ceder el turno",
+   "familia": "M",
+   "descripcion": "Ofrece hacia la persona y sostiene: «¿y usted?», «¿alguna pregunta?».",
+   "origen": [
+    "propio",
+    "seg:PALM UP (3001)",
+    "seg:ARMS REACH (3111)"
+   ],
+   "instruccion": "present the {brazo} open gripper towards the listener and hold",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 280,
+      "az": -25,
+      "z": 170,
+      "giro": 80,
+      "pinza": 100,
+      "elev": -5,
+      "pausa": 0.7
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.5,
+     "der": 4.5
+    },
+    "apice_s": {
+     "izq": 1.9,
+     "der": 1.9
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M25",
+   "nombre": "un poco",
+   "familia": "M",
+   "descripcion": "La pinza casi se cierra, en alto: poco, pequeño, breve, cerca.",
+   "origen": [
+    "propio",
+    "seg:FINGERS ESTIMATE (2322)"
+   ],
+   "instruccion": "raise the {brazo} gripper and close it to a small gap",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 240,
+      "az": 10,
+      "z": 260,
+      "giro": 0.0,
+      "pinza": 60,
+      "elev": 15
+     },
+     {
+      "r": 240,
+      "az": 10,
+      "z": 260,
+      "giro": 0.0,
+      "pinza": 8,
+      "elev": 15,
+      "pausa": 0.4
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.4,
+     "der": 4.4
+    },
+    "apice_s": {
+     "izq": 1.5,
+     "der": 1.5
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M26",
+   "nombre": "mucho",
+   "familia": "M",
+   "descripcion": "Arco de un brazo de dentro y abajo a fuera y arriba, abriendo la pinza.",
+   "origen": [
+    "propio",
+    "seg:HAND PURSE-AROUND (0010)"
+   ],
+   "instruccion": "sweep the {brazo} arm from low inside to high outside while opening the gripper",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 230,
+      "az": -10,
+      "z": 180,
+      "giro": 0.0,
+      "pinza": 30
+     },
+     {
+      "r": 300,
+      "az": 45,
+      "z": 330,
+      "giro": 0.0,
+      "pinza": 100,
+      "elev": 20,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.4,
+     "der": 4.4
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M27",
+   "nombre": "más o menos",
+   "familia": "M",
+   "descripcion": "La muñeca gira a un lado y a otro: aproximado, depende.",
+   "origen": [
+    "propio",
+    "seg:HAND ROTATE (2311)",
+    "seg:HAND WOBBLE (2011)"
+   ],
+   "instruccion": "rock the {brazo} wrist left, right and left",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 260,
+      "az": 10,
+      "z": 220,
+      "giro": -25,
+      "pinza": 70
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 220,
+      "giro": 25,
+      "pinza": 70
+     },
+     {
+      "r": 260,
+      "az": 10,
+      "z": 220,
+      "giro": -25,
+      "pinza": 70
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.6,
+     "der": 4.6
+    },
+    "apice_s": {
+     "izq": 1.3,
+     "der": 1.3
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M28",
+   "nombre": "deprisa",
+   "familia": "M",
+   "descripcion": "Dos avances cortos y seguidos: rápido, urgente, ya.",
+   "origen": [
+    "propio",
+    "seg:ARMS RUN (1122)"
+   ],
+   "instruccion": "jab the {brazo} arm forward twice quickly",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 220,
+      "az": 5,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": 5,
+      "z": 225,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 220,
+      "az": 5,
+      "z": 220,
+      "giro": 0.0,
+      "pinza": 35.0
+     },
+     {
+      "r": 290,
+      "az": 5,
+      "z": 225,
+      "giro": 0.0,
+      "pinza": 35.0
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.7,
+     "der": 4.7
+    },
+    "apice_s": {
+     "izq": 0.9,
+     "der": 0.9
+    }
+   },
+   "grafico": true
+  },
+  {
+   "id": "M29",
+   "nombre": "despacio",
+   "familia": "M",
+   "descripcion": "Pasada larga con la pinza abierta, hecha a la mitad de velocidad: con calma, zona tranquila.",
+   "origen": [
+    "propio",
+    "seg:ARM ENDEAVOR (2302)"
+   ],
+   "instruccion": "glide the {brazo} open gripper slowly from inside to outside",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 230,
+      "az": -15,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 80
+     },
+     {
+      "r": 300,
+      "az": 40,
+      "z": 200,
+      "giro": 0.0,
+      "pinza": 80
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 4.1,
+     "der": 4.1
+    },
+    "apice_s": {
+     "izq": 1.5,
+     "der": 1.5
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M30",
+   "nombre": "golpe firme",
+   "familia": "M",
+   "descripcion": "Bajada fuerte con la pinza cerrada: obligatorio, imprescindible.",
+   "origen": [
+    "propio",
+    "seg:FIST PUNCH (1133)",
+    "seg:FIST BEAT (1131)"
+   ],
+   "instruccion": "bring the {brazo} closed gripper down firmly",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 250,
+      "az": 5,
+      "z": 300,
+      "giro": 0.0,
+      "pinza": 0
+     },
+     {
+      "r": 260,
+      "az": 5,
+      "z": 170,
+      "giro": 0.0,
+      "pinza": 0,
+      "pausa": 0.25
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 3.0,
+     "der": 3.0
+    },
+    "apice_s": {
+     "izq": 1.1,
+     "der": 1.1
+    }
+   },
+   "grafico": false
+  },
+  {
+   "id": "M31",
+   "nombre": "dos opciones",
+   "familia": "M",
+   "descripcion": "Un brazo presenta a un lado y luego al otro.",
+   "origen": [
+    "propio",
+    "seg:PALMS OVERTURN (2222)"
+   ],
+   "instruccion": "present the {brazo} open gripper to one side and then to the other",
+   "movimiento": {
+    "principal": [
+     {
+      "r": 270,
+      "az": -25,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 90,
+      "pausa": 0.3
+     },
+     {
+      "r": 270,
+      "az": 45,
+      "z": 210,
+      "giro": 0.0,
+      "pinza": 90,
+      "pausa": 0.3
+     }
+    ]
+   },
+   "motor": {
+    "estado": "comprobado",
+    "dura_s": {
+     "izq": 5.4,
+     "der": 5.4
+    },
+    "apice_s": {
+     "izq": 1.7,
+     "der": 1.7
+    }
+   },
+   "grafico": false
+  }
+ ],
+ "conexiones": [
+  {
+   "id": "CV01",
+   "dominio": "CV",
+   "concepto": "saludo",
+   "ejemplo": "Hola, buenos días.",
+   "principal": "M20",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CV02",
+   "dominio": "CV",
+   "concepto": "bienvenida",
+   "ejemplo": "Bienvenido a la oficina de turismo.",
+   "principal": "B09",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV03",
+   "dominio": "CV",
+   "concepto": "presentarse",
+   "ejemplo": "Soy el asistente de este punto de información.",
+   "principal": "D13",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV04",
+   "dominio": "CV",
+   "concepto": "ofrecer ayuda",
+   "ejemplo": "¿En qué puedo ayudarle?",
+   "principal": "M24",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CV05",
+   "dominio": "CV",
+   "concepto": "escuchar",
+   "ejemplo": "(mientras la persona habla)",
+   "principal": "M23",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Los dos brazos quietos e inclinados. Sin acentos: no se gesticula mientras se escucha."
+  },
+  {
+   "id": "CV06",
+   "dominio": "CV",
+   "concepto": "entendido",
+   "ejemplo": "Entendido.",
+   "principal": "M05",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV07",
+   "dominio": "CV",
+   "concepto": "pedir que repita",
+   "ejemplo": "¿Puede repetirlo?",
+   "principal": "M09",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Corto y hacia sí."
+  },
+  {
+   "id": "CV08",
+   "dominio": "CV",
+   "concepto": "pedir que elija entre dos",
+   "ejemplo": "¿Se refiere al centro de salud o al hospital?",
+   "principal": "M31",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV09",
+   "dominio": "CV",
+   "concepto": "consultar un dato",
+   "ejemplo": "Un momento, lo consulto.",
+   "principal": "M11",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M22"
+   },
+   "notas": "Un brazo pide espera mientras el otro «busca»."
+  },
+  {
+   "id": "CV10",
+   "dominio": "CV",
+   "concepto": "no lo sé",
+   "ejemplo": "No tengo ese dato.",
+   "principal": "B12",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV11",
+   "dominio": "CV",
+   "concepto": "afirmar",
+   "ejemplo": "Sí, está abierto.",
+   "principal": "M05",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CV12",
+   "dominio": "CV",
+   "concepto": "negar",
+   "ejemplo": "No, hoy no hay servicio.",
+   "principal": "M04",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV13",
+   "dominio": "CV",
+   "concepto": "agradecer",
+   "ejemplo": "Gracias por esperar.",
+   "principal": "B11",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV14",
+   "dominio": "CV",
+   "concepto": "disculparse",
+   "ejemplo": "Disculpe las molestias.",
+   "principal": "B11",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Más lento y con más sostenido que el agradecimiento."
+  },
+  {
+   "id": "CV15",
+   "dominio": "CV",
+   "concepto": "despedida",
+   "ejemplo": "Hasta luego, que tenga buen día.",
+   "principal": "M20",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CV16",
+   "dominio": "CV",
+   "concepto": "ceder el turno",
+   "ejemplo": "¿Necesita algo más?",
+   "principal": "M24",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV17",
+   "dominio": "CV",
+   "concepto": "anunciar una lista",
+   "ejemplo": "Necesita tres cosas.",
+   "principal": "M06",
+   "otro": {
+    "papel": "prepara"
+   },
+   "notas": "El otro brazo va ya a la primera cosa de la lista."
+  },
+  {
+   "id": "CV18",
+   "dominio": "CV",
+   "concepto": "primero, segundo, tercero",
+   "ejemplo": "Primero… después… por último…",
+   "principal": "M06",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Una parada por elemento, repartidas en las frases."
+  },
+  {
+   "id": "CV19",
+   "dominio": "CV",
+   "concepto": "por un lado, por otro",
+   "ejemplo": "Por un lado es más rápido; por otro, más caro.",
+   "principal": "B17",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B17"
+   }
+  },
+  {
+   "id": "CV20",
+   "dominio": "CV",
+   "concepto": "cambiar de tema",
+   "ejemplo": "Pasando a otra cosa…",
+   "principal": "M13",
+   "otro": {
+    "papel": "prepara"
+   }
+  },
+  {
+   "id": "CV21",
+   "dominio": "CV",
+   "concepto": "resumir",
+   "ejemplo": "En resumen…",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV22",
+   "dominio": "CV",
+   "concepto": "recalcar",
+   "ejemplo": "Esto es importante.",
+   "principal": "M21",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV23",
+   "dominio": "CV",
+   "concepto": "énfasis de una palabra",
+   "ejemplo": "(cualquier palabra acentuada)",
+   "principal": "M01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CV24",
+   "dominio": "CV",
+   "concepto": "tranquilizar",
+   "ejemplo": "No se preocupe, tiene tiempo.",
+   "principal": "B13",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV25",
+   "dominio": "CV",
+   "concepto": "felicitar",
+   "ejemplo": "¡Enhorabuena, trámite completado!",
+   "principal": "B10",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CV26",
+   "dominio": "CV",
+   "concepto": "corregirse",
+   "ejemplo": "Espere, lo corrijo.",
+   "principal": "M22",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CV27",
+   "dominio": "CV",
+   "concepto": "invitar a mirar",
+   "ejemplo": "Fíjese en la pantalla.",
+   "principal": "M09",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "D01"
+   },
+   "notas": "Un brazo señala la imagen y el otro invita a acercarse."
+  },
+  {
+   "id": "CV28",
+   "dominio": "CV",
+   "concepto": "usted, su caso",
+   "ejemplo": "En su caso…",
+   "principal": "D12",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA01",
+   "dominio": "CA",
+   "concepto": "mucho",
+   "ejemplo": "Hay muchas plazas libres.",
+   "principal": "M26",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CA02",
+   "dominio": "CA",
+   "concepto": "poco",
+   "ejemplo": "Quedan pocas.",
+   "principal": "M25",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA03",
+   "dominio": "CA",
+   "concepto": "todo",
+   "ejemplo": "Todo el barrio está incluido.",
+   "principal": "B01",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CA04",
+   "dominio": "CA",
+   "concepto": "ninguno",
+   "ejemplo": "No queda ninguna.",
+   "principal": "M04",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA05",
+   "dominio": "CA",
+   "concepto": "la mitad",
+   "ejemplo": "La mitad del recorrido.",
+   "principal": "B05",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CA06",
+   "dominio": "CA",
+   "concepto": "una parte y el resto",
+   "ejemplo": "Una parte es peatonal; el resto, no.",
+   "principal": "M31",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA07",
+   "dominio": "CA",
+   "concepto": "anchura",
+   "ejemplo": "Una acera así de ancha.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CA08",
+   "dominio": "CA",
+   "concepto": "altura",
+   "ejemplo": "Un edificio de esta altura.",
+   "principal": "E16",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   },
+   "notas": "El otro brazo marca el suelo, a baja altura: la distancia entre los dos es la altura."
+  },
+  {
+   "id": "CA09",
+   "dominio": "CA",
+   "concepto": "aumentar",
+   "ejemplo": "El precio sube en verano.",
+   "principal": "E08",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CA10",
+   "dominio": "CA",
+   "concepto": "disminuir",
+   "ejemplo": "La afluencia baja por la tarde.",
+   "principal": "E09",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CA11",
+   "dominio": "CA",
+   "concepto": "más que, menos que",
+   "ejemplo": "El tren tarda menos que el autobús.",
+   "principal": "B06",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B06"
+   }
+  },
+  {
+   "id": "CA12",
+   "dominio": "CA",
+   "concepto": "igual",
+   "ejemplo": "Cuestan lo mismo.",
+   "principal": "E16",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Los dos a la misma altura, quietos."
+  },
+  {
+   "id": "CA13",
+   "dominio": "CA",
+   "concepto": "aproximadamente",
+   "ejemplo": "Unos diez minutos.",
+   "principal": "M27",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA14",
+   "dominio": "CA",
+   "concepto": "exactamente",
+   "ejemplo": "Justo a las nueve.",
+   "principal": "E17",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA15",
+   "dominio": "CA",
+   "concepto": "número pequeño",
+   "ejemplo": "Dos paradas.",
+   "principal": "M06",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Tantas paradas como el número, hasta tres."
+  },
+  {
+   "id": "CA16",
+   "dominio": "CA",
+   "concepto": "número grande",
+   "ejemplo": "Más de doscientas.",
+   "principal": "M26",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CA17",
+   "dominio": "CA",
+   "concepto": "crecer",
+   "ejemplo": "La zona verde se ha ampliado.",
+   "principal": "B03",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CA18",
+   "dominio": "CA",
+   "concepto": "concentrarse",
+   "ejemplo": "Se concentra en dos calles.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CA19",
+   "dominio": "CA",
+   "concepto": "lleno",
+   "ejemplo": "El aparcamiento está completo.",
+   "principal": "M16",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA20",
+   "dominio": "CA",
+   "concepto": "libre",
+   "ejemplo": "Hay sitio libre.",
+   "principal": "M15",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA21",
+   "dominio": "CA",
+   "concepto": "por tramos",
+   "ejemplo": "Hay tres tarifas.",
+   "principal": "E12",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CA22",
+   "dominio": "CA",
+   "concepto": "se acumula",
+   "ejemplo": "Se suman los recargos.",
+   "principal": "B18",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B18"
+   }
+  },
+  {
+   "id": "CA23",
+   "dominio": "CA",
+   "concepto": "máximo",
+   "ejemplo": "Como máximo, dos horas.",
+   "principal": "M07",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   },
+   "notas": "El otro brazo marca el tope y el principal corta contra él."
+  },
+  {
+   "id": "TI01",
+   "dominio": "TI",
+   "concepto": "ahora",
+   "ejemplo": "Ahora mismo está abierto.",
+   "principal": "D10",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI02",
+   "dominio": "TI",
+   "concepto": "antes",
+   "ejemplo": "Antes pasaba por aquí.",
+   "principal": "M14",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI03",
+   "dominio": "TI",
+   "concepto": "después",
+   "ejemplo": "Después verá una rotonda.",
+   "principal": "M13",
+   "otro": {
+    "papel": "prepara"
+   }
+  },
+  {
+   "id": "TI04",
+   "dominio": "TI",
+   "concepto": "duración",
+   "ejemplo": "Tarda unos veinte minutos.",
+   "principal": "M12",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI05",
+   "dominio": "TI",
+   "concepto": "hora de apertura",
+   "ejemplo": "Abre a las nueve.",
+   "principal": "M15",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   },
+   "notas": "Un brazo marca el reloj y el otro abre."
+  },
+  {
+   "id": "TI06",
+   "dominio": "TI",
+   "concepto": "hora de cierre",
+   "ejemplo": "Cierra a las dos.",
+   "principal": "M16",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "TI07",
+   "dominio": "TI",
+   "concepto": "plazo",
+   "ejemplo": "El plazo acaba el viernes.",
+   "principal": "M13",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "D10"
+   },
+   "despues": [
+    "M07"
+   ],
+   "notas": "El otro brazo sostiene «hoy»; el principal se desplaza hasta la fecha y corta."
+  },
+  {
+   "id": "TI08",
+   "dominio": "TI",
+   "concepto": "cada cierto tiempo",
+   "ejemplo": "Pasa cada diez minutos.",
+   "principal": "E20",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Toques regulares."
+  },
+  {
+   "id": "TI09",
+   "dominio": "TI",
+   "concepto": "todo el día",
+   "ejemplo": "Funciona todo el día.",
+   "principal": "E18",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Sin pausa, de extremo a extremo."
+  },
+  {
+   "id": "TI10",
+   "dominio": "TI",
+   "concepto": "nunca",
+   "ejemplo": "Los domingos no abre.",
+   "principal": "M04",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI11",
+   "dominio": "TI",
+   "concepto": "enseguida",
+   "ejemplo": "Llega enseguida.",
+   "principal": "M28",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI12",
+   "dominio": "TI",
+   "concepto": "retraso",
+   "ejemplo": "Lleva retraso.",
+   "principal": "M29",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "TI13",
+   "dominio": "TI",
+   "concepto": "urgente",
+   "ejemplo": "Es urgente.",
+   "principal": "M28",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M21"
+   }
+  },
+  {
+   "id": "TI14",
+   "dominio": "TI",
+   "concepto": "esperar",
+   "ejemplo": "Espere su turno.",
+   "principal": "M22",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI15",
+   "dominio": "TI",
+   "concepto": "por pasos",
+   "ejemplo": "El trámite tiene tres pasos.",
+   "principal": "E12",
+   "otro": {
+    "papel": "prepara"
+   }
+  },
+  {
+   "id": "TI16",
+   "dominio": "TI",
+   "concepto": "en marcha",
+   "ejemplo": "La solicitud está en trámite.",
+   "principal": "B20",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B20"
+   }
+  },
+  {
+   "id": "TI17",
+   "dominio": "TI",
+   "concepto": "evolución",
+   "ejemplo": "El barrio ha ido cambiando con los años.",
+   "principal": "E15",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI18",
+   "dominio": "TI",
+   "concepto": "terminado",
+   "ejemplo": "Ya está resuelto.",
+   "principal": "M16",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI19",
+   "dominio": "TI",
+   "concepto": "empezar",
+   "ejemplo": "Empiece por aquí.",
+   "principal": "M10",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI20",
+   "dominio": "TI",
+   "concepto": "provisional",
+   "ejemplo": "Es un desvío provisional.",
+   "principal": "M27",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "TI21",
+   "dominio": "TI",
+   "concepto": "desde… hasta",
+   "ejemplo": "De lunes a viernes.",
+   "principal": "M13",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M14"
+   },
+   "notas": "Un brazo sostiene el principio y el otro lleva hasta el final."
+  },
+  {
+   "id": "ES01",
+   "dominio": "ES",
+   "concepto": "aquí",
+   "ejemplo": "Usted está aquí.",
+   "principal": "D10",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Con mapa en pantalla, mejor IM17."
+  },
+  {
+   "id": "ES02",
+   "dominio": "ES",
+   "concepto": "allí",
+   "ejemplo": "Está allí.",
+   "principal": "D11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES03",
+   "dominio": "ES",
+   "concepto": "a la izquierda",
+   "ejemplo": "A su izquierda.",
+   "principal": "D06",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Brazo izquierdo."
+  },
+  {
+   "id": "ES04",
+   "dominio": "ES",
+   "concepto": "a la derecha",
+   "ejemplo": "A su derecha.",
+   "principal": "D06",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Brazo derecho."
+  },
+  {
+   "id": "ES05",
+   "dominio": "ES",
+   "concepto": "enfrente",
+   "ejemplo": "Justo enfrente.",
+   "principal": "D07",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES06",
+   "dominio": "ES",
+   "concepto": "arriba",
+   "ejemplo": "En la planta de arriba.",
+   "principal": "D08",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES07",
+   "dominio": "ES",
+   "concepto": "abajo",
+   "ejemplo": "En el sótano.",
+   "principal": "D09",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES08",
+   "dominio": "ES",
+   "concepto": "cerca",
+   "ejemplo": "Está muy cerca.",
+   "principal": "M25",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES09",
+   "dominio": "ES",
+   "concepto": "lejos",
+   "ejemplo": "Queda lejos.",
+   "principal": "D11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES10",
+   "dominio": "ES",
+   "concepto": "entre",
+   "ejemplo": "Entre el banco y la farmacia.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Con mapa en pantalla, mejor IM08."
+  },
+  {
+   "id": "ES11",
+   "dominio": "ES",
+   "concepto": "alrededor",
+   "ejemplo": "Alrededor de la plaza.",
+   "principal": "E07",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES12",
+   "dominio": "ES",
+   "concepto": "dentro",
+   "ejemplo": "Dentro del recinto.",
+   "principal": "B19",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "ES13",
+   "dominio": "ES",
+   "concepto": "fuera",
+   "ejemplo": "Fuera del casco urbano.",
+   "principal": "M08",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES14",
+   "dominio": "ES",
+   "concepto": "junto a",
+   "ejemplo": "Junto a la estación.",
+   "principal": "E17",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E17"
+   },
+   "notas": "El otro brazo clava la referencia; el principal, lo que está al lado."
+  },
+  {
+   "id": "ES15",
+   "dominio": "ES",
+   "concepto": "a lo largo de",
+   "ejemplo": "A lo largo del paseo.",
+   "principal": "E18",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "ES16",
+   "dominio": "ES",
+   "concepto": "al otro lado",
+   "ejemplo": "Al otro lado de la plaza.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES17",
+   "dominio": "ES",
+   "concepto": "en el centro",
+   "ejemplo": "En el centro del pueblo.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "ES18",
+   "dominio": "ES",
+   "concepto": "en la esquina",
+   "ejemplo": "En la esquina.",
+   "principal": "E05",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Versión corta: el giro, sin el tramo recto."
+  },
+  {
+   "id": "ES19",
+   "dominio": "ES",
+   "concepto": "límite",
+   "ejemplo": "Hasta el límite municipal.",
+   "principal": "E18",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M07"
+   ]
+  },
+  {
+   "id": "ES20",
+   "dominio": "ES",
+   "concepto": "al fondo",
+   "ejemplo": "Al fondo del pasillo.",
+   "principal": "D11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES21",
+   "dominio": "ES",
+   "concepto": "detrás",
+   "ejemplo": "Detrás del edificio.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "El arco pasa por encima y cae al otro lado. Los brazos no pueden señalar hacia atrás."
+  },
+  {
+   "id": "ES22",
+   "dominio": "ES",
+   "concepto": "delante",
+   "ejemplo": "Delante de la entrada.",
+   "principal": "D07",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "ES23",
+   "dominio": "ES",
+   "concepto": "un punto del mapa",
+   "ejemplo": "La oficina está aquí.",
+   "principal": "D01",
+   "otro": {
+    "papel": "prepara"
+   }
+  },
+  {
+   "id": "ES24",
+   "dominio": "ES",
+   "concepto": "una zona del mapa",
+   "ejemplo": "Todo este barrio.",
+   "principal": "D04",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "ES25",
+   "dominio": "ES",
+   "concepto": "desde aquí hasta allí",
+   "ejemplo": "Desde la estación hasta el museo.",
+   "principal": "B16",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B16"
+   }
+  },
+  {
+   "id": "DI01",
+   "dominio": "DI",
+   "concepto": "siga recto",
+   "ejemplo": "Siga recto por esta calle.",
+   "principal": "E04",
+   "otro": {
+    "papel": "prepara"
+   },
+   "notas": "El otro brazo va ya a la postura del giro siguiente."
+  },
+  {
+   "id": "DI02",
+   "dominio": "DI",
+   "concepto": "gire a la izquierda",
+   "ejemplo": "Gire a la izquierda.",
+   "principal": "E05",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Brazo izquierdo."
+  },
+  {
+   "id": "DI03",
+   "dominio": "DI",
+   "concepto": "gire a la derecha",
+   "ejemplo": "Gire a la derecha.",
+   "principal": "E05",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Brazo derecho."
+  },
+  {
+   "id": "DI04",
+   "dominio": "DI",
+   "concepto": "la segunda calle",
+   "ejemplo": "La segunda a la derecha.",
+   "principal": "M06",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "E05"
+   ],
+   "notas": "Tantas paradas como el ordinal y, sin volver a reposo, el giro."
+  },
+  {
+   "id": "DI05",
+   "dominio": "DI",
+   "concepto": "rotonda y salida",
+   "ejemplo": "En la rotonda, la tercera salida.",
+   "principal": "E07",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M06"
+   },
+   "notas": "Un brazo dibuja la rotonda; el otro cuenta las salidas."
+  },
+  {
+   "id": "DI06",
+   "dominio": "DI",
+   "concepto": "cruzar la calle",
+   "ejemplo": "Cruce al otro lado.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI07",
+   "dominio": "DI",
+   "concepto": "cruzar un puente",
+   "ejemplo": "Pase el puente.",
+   "principal": "E13",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "E10"
+   },
+   "notas": "El otro brazo es el río, por debajo."
+  },
+  {
+   "id": "DI08",
+   "dominio": "DI",
+   "concepto": "intersección",
+   "ejemplo": "En el cruce.",
+   "principal": "B08",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B08"
+   }
+  },
+  {
+   "id": "DI09",
+   "dominio": "DI",
+   "concepto": "subir",
+   "ejemplo": "Suba la cuesta.",
+   "principal": "E08",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI10",
+   "dominio": "DI",
+   "concepto": "bajar",
+   "ejemplo": "Baje hasta el río.",
+   "principal": "E09",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI11",
+   "dominio": "DI",
+   "concepto": "hasta el final",
+   "ejemplo": "Hasta el final de la avenida.",
+   "principal": "E04",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M07"
+   ]
+  },
+  {
+   "id": "DI12",
+   "dominio": "DI",
+   "concepto": "media vuelta",
+   "ejemplo": "Dé media vuelta.",
+   "principal": "E14",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI13",
+   "dominio": "DI",
+   "concepto": "a pocos metros",
+   "ejemplo": "A cincuenta metros.",
+   "principal": "M25",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI14",
+   "dominio": "DI",
+   "concepto": "bastante más adelante",
+   "ejemplo": "Un kilómetro más adelante.",
+   "principal": "D11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI15",
+   "dominio": "DI",
+   "concepto": "el destino",
+   "ejemplo": "Ha llegado: es ahí.",
+   "principal": "E17",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Con mapa en pantalla, D01."
+  },
+  {
+   "id": "DI16",
+   "dominio": "DI",
+   "concepto": "pasar de largo",
+   "ejemplo": "Deje atrás la gasolinera.",
+   "principal": "M13",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI17",
+   "dominio": "DI",
+   "concepto": "la ruta en el mapa",
+   "ejemplo": "El camino es este.",
+   "principal": "B16",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B16"
+   }
+  },
+  {
+   "id": "DI18",
+   "dominio": "DI",
+   "concepto": "atajo",
+   "ejemplo": "Hay un atajo por el parque.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Arco bajo y rápido."
+  },
+  {
+   "id": "DI19",
+   "dominio": "DI",
+   "concepto": "callejuelas",
+   "ejemplo": "Por las calles del casco antiguo.",
+   "principal": "E11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "DI20",
+   "dominio": "DI",
+   "concepto": "la paralela",
+   "ejemplo": "Vaya por la calle paralela.",
+   "principal": "B07",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "DI21",
+   "dominio": "DI",
+   "concepto": "a un lado verá",
+   "ejemplo": "A su derecha verá la catedral.",
+   "principal": "D06",
+   "otro": {
+    "papel": "prepara"
+   },
+   "notas": "Brazo del lado nombrado."
+  },
+  {
+   "id": "DI22",
+   "dominio": "DI",
+   "concepto": "plantas",
+   "ejemplo": "Suba a la segunda planta.",
+   "principal": "E12",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Tantos escalones como plantas."
+  },
+  {
+   "id": "DI23",
+   "dominio": "DI",
+   "concepto": "entrada y salida",
+   "ejemplo": "La entrada está por aquí; la salida, por allí.",
+   "principal": "B17",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B17"
+   }
+  },
+  {
+   "id": "DI24",
+   "dominio": "DI",
+   "concepto": "recto y giro al otro lado",
+   "ejemplo": "Recto y, al final, hacia el otro lado.",
+   "principal": "E04",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "E06"
+   ],
+   "notas": "Cuando el giro cae del lado contrario al brazo que avanza y el otro está ocupado."
+  },
+  {
+   "id": "DI25",
+   "dominio": "DI",
+   "concepto": "sentido obligatorio",
+   "ejemplo": "Solo se puede ir en este sentido.",
+   "principal": "E04",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M03"
+   },
+   "notas": "Un brazo avanza; el otro cierra el sentido contrario."
+  },
+  {
+   "id": "UR01",
+   "dominio": "UR",
+   "concepto": "calle",
+   "ejemplo": "Esta calle.",
+   "principal": "E03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "UR02",
+   "dominio": "UR",
+   "concepto": "avenida",
+   "ejemplo": "Una avenida de cuatro carriles.",
+   "principal": "B07",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "UR03",
+   "dominio": "UR",
+   "concepto": "plaza",
+   "ejemplo": "La plaza mayor.",
+   "principal": "E19",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "UR04",
+   "dominio": "UR",
+   "concepto": "torre",
+   "ejemplo": "La torre del ayuntamiento.",
+   "principal": "E08",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   },
+   "notas": "El otro brazo marca la base."
+  },
+  {
+   "id": "UR05",
+   "dominio": "UR",
+   "concepto": "barrio",
+   "ejemplo": "El barrio de pescadores.",
+   "principal": "D04",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "UR06",
+   "dominio": "UR",
+   "concepto": "casco antiguo",
+   "ejemplo": "El casco histórico.",
+   "principal": "B19",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "UR07",
+   "dominio": "UR",
+   "concepto": "puente",
+   "ejemplo": "El puente de piedra.",
+   "principal": "E13",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "E10"
+   }
+  },
+  {
+   "id": "UR08",
+   "dominio": "UR",
+   "concepto": "río o canal",
+   "ejemplo": "El canal atraviesa el centro.",
+   "principal": "E10",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "UR09",
+   "dominio": "UR",
+   "concepto": "parque",
+   "ejemplo": "El parque central.",
+   "principal": "E19",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "E08"
+   },
+   "notas": "Un brazo es el suelo; el otro, los árboles."
+  },
+  {
+   "id": "UR10",
+   "dominio": "UR",
+   "concepto": "parada",
+   "ejemplo": "La parada de autobús.",
+   "principal": "E17",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "UR11",
+   "dominio": "UR",
+   "concepto": "aparcamiento",
+   "ejemplo": "El aparcamiento público.",
+   "principal": "E19",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "E20"
+   },
+   "notas": "Un brazo es la explanada; el otro puntea las plazas."
+  },
+  {
+   "id": "UR12",
+   "dominio": "UR",
+   "concepto": "monumento",
+   "ejemplo": "El monumento de la plaza.",
+   "principal": "D01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "UR13",
+   "dominio": "UR",
+   "concepto": "zona comercial",
+   "ejemplo": "La zona de tiendas.",
+   "principal": "D02",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "UR14",
+   "dominio": "UR",
+   "concepto": "zona peatonal",
+   "ejemplo": "Esta zona es peatonal.",
+   "principal": "E19",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M03"
+   },
+   "notas": "Un brazo muestra la zona; el otro para a los coches."
+  },
+  {
+   "id": "UR15",
+   "dominio": "UR",
+   "concepto": "carril bici",
+   "ejemplo": "El carril bici.",
+   "principal": "E04",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M25"
+   },
+   "notas": "El otro brazo dice «estrecho»."
+  },
+  {
+   "id": "UR16",
+   "dominio": "UR",
+   "concepto": "obras",
+   "ejemplo": "Hay obras en esta calle.",
+   "principal": "M03",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "D01"
+   },
+   "notas": "Un brazo señala dónde; el otro avisa."
+  },
+  {
+   "id": "UR17",
+   "dominio": "UR",
+   "concepto": "muralla",
+   "ejemplo": "La muralla rodea el centro.",
+   "principal": "E18",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   }
+  },
+  {
+   "id": "UR18",
+   "dominio": "UR",
+   "concepto": "paso subterráneo",
+   "ejemplo": "Por el paso subterráneo.",
+   "principal": "E09",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "E04"
+   ]
+  },
+  {
+   "id": "UR19",
+   "dominio": "UR",
+   "concepto": "mirador",
+   "ejemplo": "Desde el mirador se ve toda la ciudad.",
+   "principal": "B01",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "UR20",
+   "dominio": "UR",
+   "concepto": "perfil de la ciudad",
+   "ejemplo": "Edificios altos y bajos.",
+   "principal": "E10",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Sube y baja como la línea de los tejados."
+  },
+  {
+   "id": "UR21",
+   "dominio": "UR",
+   "concepto": "del centro a las afueras",
+   "ejemplo": "Del centro hacia las afueras.",
+   "principal": "B03",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "RU01",
+   "dominio": "RU",
+   "concepto": "campo",
+   "ejemplo": "Los campos de cereal.",
+   "principal": "E01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "RU02",
+   "dominio": "RU",
+   "concepto": "horizonte",
+   "ejemplo": "Hasta donde alcanza la vista.",
+   "principal": "E02",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "RU03",
+   "dominio": "RU",
+   "concepto": "montaña",
+   "ejemplo": "La sierra, al norte.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "El arco alto es el perfil de la montaña."
+  },
+  {
+   "id": "RU04",
+   "dominio": "RU",
+   "concepto": "cordillera",
+   "ejemplo": "Una cadena de montañas.",
+   "principal": "E10",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Ondas altas."
+  },
+  {
+   "id": "RU05",
+   "dominio": "RU",
+   "concepto": "valle",
+   "ejemplo": "El pueblo está en el valle.",
+   "principal": "E09",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Los dos bajan hacia el centro: las dos laderas."
+  },
+  {
+   "id": "RU06",
+   "dominio": "RU",
+   "concepto": "colinas",
+   "ejemplo": "Colinas suaves.",
+   "principal": "E10",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Lento."
+  },
+  {
+   "id": "RU07",
+   "dominio": "RU",
+   "concepto": "río",
+   "ejemplo": "El río baja hacia el sur.",
+   "principal": "E10",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Con mapa en pantalla, D03 sobre su cauce."
+  },
+  {
+   "id": "RU08",
+   "dominio": "RU",
+   "concepto": "sendero en zigzag",
+   "ejemplo": "El sendero sube en zigzag.",
+   "principal": "E11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "RU09",
+   "dominio": "RU",
+   "concepto": "camino",
+   "ejemplo": "El camino del molino.",
+   "principal": "E03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "RU10",
+   "dominio": "RU",
+   "concepto": "bosque",
+   "ejemplo": "Un bosque de pinos.",
+   "principal": "E20",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Toques altos: los troncos."
+  },
+  {
+   "id": "RU11",
+   "dominio": "RU",
+   "concepto": "cultivos en hileras",
+   "ejemplo": "Viñedos en hileras.",
+   "principal": "B07",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "RU12",
+   "dominio": "RU",
+   "concepto": "pueblo",
+   "ejemplo": "Un pueblo pequeño.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "RU13",
+   "dominio": "RU",
+   "concepto": "casas dispersas",
+   "ejemplo": "Casas dispersas por la ladera.",
+   "principal": "B03",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "RU14",
+   "dominio": "RU",
+   "concepto": "cielo despejado",
+   "ejemplo": "Cielo despejado.",
+   "principal": "E02",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "RU15",
+   "dominio": "RU",
+   "concepto": "lluvia",
+   "ejemplo": "Se esperan lluvias.",
+   "principal": "E09",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Dos bajadas cortas con las pinzas abiertas."
+  },
+  {
+   "id": "RU16",
+   "dominio": "RU",
+   "concepto": "viento",
+   "ejemplo": "Sopla viento fuerte.",
+   "principal": "E14",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Rápido."
+  },
+  {
+   "id": "RU17",
+   "dominio": "RU",
+   "concepto": "sol",
+   "ejemplo": "Mucho sol a mediodía.",
+   "principal": "D08",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M15"
+   ]
+  },
+  {
+   "id": "RU18",
+   "dominio": "RU",
+   "concepto": "desnivel",
+   "ejemplo": "Un desnivel fuerte.",
+   "principal": "E08",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   }
+  },
+  {
+   "id": "RU19",
+   "dominio": "RU",
+   "concepto": "embalse",
+   "ejemplo": "El embalse.",
+   "principal": "E07",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Círculo bajo y lento."
+  },
+  {
+   "id": "RU20",
+   "dominio": "RU",
+   "concepto": "costa",
+   "ejemplo": "La línea de costa.",
+   "principal": "E18",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "E10"
+   },
+   "notas": "Un brazo es la orilla; el otro, las olas."
+  },
+  {
+   "id": "RU21",
+   "dominio": "RU",
+   "concepto": "ruta de senderismo",
+   "ejemplo": "La ruta sale del pueblo y sube al collado.",
+   "principal": "B16",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B16"
+   }
+  },
+  {
+   "id": "RU22",
+   "dominio": "RU",
+   "concepto": "distancia entre pueblos",
+   "ejemplo": "Están a diez kilómetros.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI01",
+   "dominio": "VI",
+   "concepto": "tráfico fluido",
+   "ejemplo": "Circulación fluida.",
+   "principal": "B07",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI02",
+   "dominio": "VI",
+   "concepto": "tráfico denso",
+   "ejemplo": "Tráfico denso.",
+   "principal": "M29",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI03",
+   "dominio": "VI",
+   "concepto": "retención",
+   "ejemplo": "Hay dos kilómetros de retención.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Lento, y sostenido al final."
+  },
+  {
+   "id": "VI04",
+   "dominio": "VI",
+   "concepto": "carretera cortada",
+   "ejemplo": "La carretera está cortada.",
+   "principal": "B14",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI05",
+   "dominio": "VI",
+   "concepto": "carril cerrado",
+   "ejemplo": "Hay un carril cerrado.",
+   "principal": "E04",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M03"
+   }
+  },
+  {
+   "id": "VI06",
+   "dominio": "VI",
+   "concepto": "desvío",
+   "ejemplo": "Tome el desvío señalizado.",
+   "principal": "E13",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M03"
+   },
+   "notas": "El otro brazo es el obstáculo; el principal lo rodea."
+  },
+  {
+   "id": "VI07",
+   "dominio": "VI",
+   "concepto": "obras en la calzada",
+   "ejemplo": "Obras en el kilómetro doce.",
+   "principal": "M03",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "D01"
+   }
+  },
+  {
+   "id": "VI08",
+   "dominio": "VI",
+   "concepto": "accidente",
+   "ejemplo": "Accidente más adelante.",
+   "principal": "M21",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "D11"
+   }
+  },
+  {
+   "id": "VI09",
+   "dominio": "VI",
+   "concepto": "peligro",
+   "ejemplo": "Precaución, firme deslizante.",
+   "principal": "M21",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI10",
+   "dominio": "VI",
+   "concepto": "reducir la velocidad",
+   "ejemplo": "Modere la velocidad.",
+   "principal": "B13",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI11",
+   "dominio": "VI",
+   "concepto": "límite de velocidad",
+   "ejemplo": "Limitado a treinta.",
+   "principal": "M07",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "E16"
+   }
+  },
+  {
+   "id": "VI12",
+   "dominio": "VI",
+   "concepto": "prohibido el paso",
+   "ejemplo": "Prohibido el paso.",
+   "principal": "M03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI13",
+   "dominio": "VI",
+   "concepto": "sentido único",
+   "ejemplo": "Calle de sentido único.",
+   "principal": "E04",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M03"
+   }
+  },
+  {
+   "id": "VI14",
+   "dominio": "VI",
+   "concepto": "ceder el paso",
+   "ejemplo": "Ceda el paso.",
+   "principal": "M22",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI15",
+   "dominio": "VI",
+   "concepto": "semáforo",
+   "ejemplo": "Espere al semáforo.",
+   "principal": "M16",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M15"
+   ],
+   "notas": "Cierra y abre: rojo y verde."
+  },
+  {
+   "id": "VI16",
+   "dominio": "VI",
+   "concepto": "peaje",
+   "ejemplo": "Ese tramo es de peaje.",
+   "principal": "M19",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI17",
+   "dominio": "VI",
+   "concepto": "aparcamiento libre",
+   "ejemplo": "Hay plazas libres.",
+   "principal": "M15",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI18",
+   "dominio": "VI",
+   "concepto": "aparcamiento completo",
+   "ejemplo": "Está completo.",
+   "principal": "M16",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI19",
+   "dominio": "VI",
+   "concepto": "tiempo limitado",
+   "ejemplo": "Máximo dos horas.",
+   "principal": "M12",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M07"
+   ]
+  },
+  {
+   "id": "VI20",
+   "dominio": "VI",
+   "concepto": "frecuencia de paso",
+   "ejemplo": "Un autobús cada quince minutos.",
+   "principal": "E20",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "VI21",
+   "dominio": "VI",
+   "concepto": "paradas de la línea",
+   "ejemplo": "Para en Mercado, Catedral y Estación.",
+   "principal": "E20",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Con mapa en pantalla, D05 sobre las paradas."
+  },
+  {
+   "id": "VI22",
+   "dominio": "VI",
+   "concepto": "transbordo",
+   "ejemplo": "Cambie a la línea 3.",
+   "principal": "E13",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI23",
+   "dominio": "VI",
+   "concepto": "retraso",
+   "ejemplo": "Circula con veinte minutos de retraso.",
+   "principal": "M29",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "VI24",
+   "dominio": "VI",
+   "concepto": "hora punta",
+   "ejemplo": "En hora punta se llena.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI25",
+   "dominio": "VI",
+   "concepto": "ruta alternativa",
+   "ejemplo": "Mejor por la circunvalación.",
+   "principal": "E13",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M04"
+   },
+   "notas": "Un brazo niega el camino habitual; el otro dibuja el rodeo."
+  },
+  {
+   "id": "VI26",
+   "dominio": "VI",
+   "concepto": "dirección",
+   "ejemplo": "Dirección centro.",
+   "principal": "D07",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "VI27",
+   "dominio": "VI",
+   "concepto": "distancia restante",
+   "ejemplo": "Faltan tres kilómetros.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "VI28",
+   "dominio": "VI",
+   "concepto": "a pie",
+   "ejemplo": "A pie son diez minutos.",
+   "principal": "E20",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Toques cortos: los pasos."
+  },
+  {
+   "id": "SP01",
+   "dominio": "SP",
+   "concepto": "horario de atención",
+   "ejemplo": "La oficina atiende de nueve a dos.",
+   "principal": "M12",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M15"
+   }
+  },
+  {
+   "id": "SP02",
+   "dominio": "SP",
+   "concepto": "cerrado",
+   "ejemplo": "Hoy está cerrado.",
+   "principal": "M16",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP03",
+   "dominio": "SP",
+   "concepto": "cita previa",
+   "ejemplo": "Necesita cita previa.",
+   "principal": "E17",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   },
+   "notas": "Un brazo es el reloj; el otro fija la cita."
+  },
+  {
+   "id": "SP04",
+   "dominio": "SP",
+   "concepto": "documentación necesaria",
+   "ejemplo": "Traiga el DNI, el justificante y el formulario.",
+   "principal": "M06",
+   "otro": {
+    "papel": "prepara"
+   }
+  },
+  {
+   "id": "SP05",
+   "dominio": "SP",
+   "concepto": "formulario",
+   "ejemplo": "Rellene la solicitud.",
+   "principal": "M18",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M02"
+   },
+   "notas": "El otro brazo ofrece el «papel»; el principal escribe."
+  },
+  {
+   "id": "SP06",
+   "dominio": "SP",
+   "concepto": "firma",
+   "ejemplo": "Firme aquí.",
+   "principal": "M18",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Corto."
+  },
+  {
+   "id": "SP07",
+   "dominio": "SP",
+   "concepto": "tasa",
+   "ejemplo": "La tasa es de doce euros.",
+   "principal": "M19",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP08",
+   "dominio": "SP",
+   "concepto": "gratuito",
+   "ejemplo": "Es gratuito.",
+   "principal": "M02",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Se ofrece sin cerrar la pinza: no hay entrega."
+  },
+  {
+   "id": "SP09",
+   "dominio": "SP",
+   "concepto": "ventanilla",
+   "ejemplo": "Diríjase a la ventanilla tres.",
+   "principal": "D06",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M06"
+   },
+   "notas": "Un brazo indica el lado; el otro, el número."
+  },
+  {
+   "id": "SP10",
+   "dominio": "SP",
+   "concepto": "turno",
+   "ejemplo": "Espere a que salga su número.",
+   "principal": "M22",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP11",
+   "dominio": "SP",
+   "concepto": "plazo de presentación",
+   "ejemplo": "Tiene diez días para presentarlo.",
+   "principal": "M12",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "M07"
+   ]
+  },
+  {
+   "id": "SP12",
+   "dominio": "SP",
+   "concepto": "teléfono",
+   "ejemplo": "Llame al 010.",
+   "principal": "M17",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP13",
+   "dominio": "SP",
+   "concepto": "por internet",
+   "ejemplo": "Puede hacerlo en la sede electrónica.",
+   "principal": "D01",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M18"
+   },
+   "notas": "Un brazo señala la pantalla; el otro «teclea»."
+  },
+  {
+   "id": "SP14",
+   "dominio": "SP",
+   "concepto": "obligatorio",
+   "ejemplo": "Es obligatorio.",
+   "principal": "M30",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP15",
+   "dominio": "SP",
+   "concepto": "opcional",
+   "ejemplo": "Es opcional.",
+   "principal": "M27",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP16",
+   "dominio": "SP",
+   "concepto": "aprobado",
+   "ejemplo": "Su solicitud está aprobada.",
+   "principal": "M05",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "SP17",
+   "dominio": "SP",
+   "concepto": "denegado",
+   "ejemplo": "Ha sido denegada.",
+   "principal": "M04",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP18",
+   "dominio": "SP",
+   "concepto": "reclamación",
+   "ejemplo": "Puede presentar una reclamación.",
+   "principal": "M10",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP19",
+   "dominio": "SP",
+   "concepto": "entregar",
+   "ejemplo": "Entréguelo en el registro.",
+   "principal": "M19",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP20",
+   "dominio": "SP",
+   "concepto": "recoger",
+   "ejemplo": "Puede recogerlo mañana.",
+   "principal": "M09",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP21",
+   "dominio": "SP",
+   "concepto": "ayuda",
+   "ejemplo": "Le podemos ayudar con el trámite.",
+   "principal": "M02",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "SP22",
+   "dominio": "SP",
+   "concepto": "emergencia",
+   "ejemplo": "En caso de emergencia llame al 112.",
+   "principal": "M21",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M17"
+   }
+  },
+  {
+   "id": "SP23",
+   "dominio": "SP",
+   "concepto": "centro de salud",
+   "ejemplo": "El centro de salud más cercano.",
+   "principal": "D01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "SP24",
+   "dominio": "SP",
+   "concepto": "zona vigilada",
+   "ejemplo": "Es una zona vigilada.",
+   "principal": "B19",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "SP25",
+   "dominio": "SP",
+   "concepto": "entrada accesible",
+   "ejemplo": "La entrada es accesible.",
+   "principal": "E19",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Llano y lento."
+  },
+  {
+   "id": "SP26",
+   "dominio": "SP",
+   "concepto": "para todos",
+   "ejemplo": "Es para todos los vecinos.",
+   "principal": "B01",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "SP27",
+   "dominio": "SP",
+   "concepto": "empadronamiento",
+   "ejemplo": "Para empadronarse.",
+   "principal": "M18",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "E17"
+   ]
+  },
+  {
+   "id": "SP28",
+   "dominio": "SP",
+   "concepto": "reciclaje",
+   "ejemplo": "Separe el vidrio y el papel.",
+   "principal": "B05",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "SP29",
+   "dominio": "SP",
+   "concepto": "recogida",
+   "ejemplo": "La recogida es los martes.",
+   "principal": "M09",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "SP30",
+   "dominio": "SP",
+   "concepto": "corte de suministro",
+   "ejemplo": "Corte de agua de ocho a doce.",
+   "principal": "M07",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "M12"
+   }
+  },
+  {
+   "id": "SP31",
+   "dominio": "SP",
+   "concepto": "ayuda económica",
+   "ejemplo": "Hay una ayuda disponible.",
+   "principal": "M02",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP32",
+   "dominio": "SP",
+   "concepto": "no permitido",
+   "ejemplo": "No está permitido.",
+   "principal": "M03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP33",
+   "dominio": "SP",
+   "concepto": "permitido",
+   "ejemplo": "Sí está permitido.",
+   "principal": "M05",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "SP34",
+   "dominio": "SP",
+   "concepto": "otra oficina",
+   "ejemplo": "Eso lo lleva otra oficina.",
+   "principal": "D06",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Brazo del lado hacia el que queda."
+  },
+  {
+   "id": "SP35",
+   "dominio": "SP",
+   "concepto": "comprender una queja",
+   "ejemplo": "Entiendo la molestia.",
+   "principal": "M23",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "SP36",
+   "dominio": "SP",
+   "concepto": "solo el titular",
+   "ejemplo": "Solo puede hacerlo el titular.",
+   "principal": "D12",
+   "otro": {
+    "papel": "libre"
+   },
+   "despues": [
+    "E17"
+   ]
+  },
+  {
+   "id": "IM01",
+   "dominio": "IM",
+   "concepto": "un elemento",
+   "ejemplo": "Este es el campanario.",
+   "principal": "D01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM02",
+   "dominio": "IM",
+   "concepto": "una zona",
+   "ejemplo": "Toda esta parte es el mercado.",
+   "principal": "D02",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM03",
+   "dominio": "IM",
+   "concepto": "el conjunto",
+   "ejemplo": "La imagen muestra toda la bahía.",
+   "principal": "B01",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "IM04",
+   "dominio": "IM",
+   "concepto": "el cielo",
+   "ejemplo": "Arriba, el cielo.",
+   "principal": "E02",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM05",
+   "dominio": "IM",
+   "concepto": "el paisaje",
+   "ejemplo": "Un paisaje abierto.",
+   "principal": "E01",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM06",
+   "dominio": "IM",
+   "concepto": "un camino",
+   "ejemplo": "El camino cruza la imagen.",
+   "principal": "E03",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM07",
+   "dominio": "IM",
+   "concepto": "el contorno",
+   "ejemplo": "El recinto es este.",
+   "principal": "D04",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "IM08",
+   "dominio": "IM",
+   "concepto": "dos elementos a la vez",
+   "ejemplo": "El árbol y la casa.",
+   "principal": "B15",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "IM09",
+   "dominio": "IM",
+   "concepto": "de un elemento a otro",
+   "ejemplo": "Del sol a la casa.",
+   "principal": "D05",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "IM10",
+   "dominio": "IM",
+   "concepto": "contraste",
+   "ejemplo": "Luz arriba, sombra abajo.",
+   "principal": "B06",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B06"
+   }
+  },
+  {
+   "id": "IM11",
+   "dominio": "IM",
+   "concepto": "un detalle",
+   "ejemplo": "Un detalle: la veleta.",
+   "principal": "D01",
+   "otro": {
+    "papel": "ancla",
+    "primitiva": "M25"
+   },
+   "notas": "El otro brazo dice «pequeño»."
+  },
+  {
+   "id": "IM12",
+   "dominio": "IM",
+   "concepto": "primer plano y fondo",
+   "ejemplo": "En primer plano, el puente; al fondo, la sierra.",
+   "principal": "D02",
+   "otro": {
+    "papel": "prepara"
+   },
+   "notas": "El principal barre abajo; el otro va ya arriba para la segunda parte."
+  },
+  {
+   "id": "IM13",
+   "dominio": "IM",
+   "concepto": "simetría",
+   "ejemplo": "Una composición simétrica.",
+   "principal": "B03",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "IM14",
+   "dominio": "IM",
+   "concepto": "recorrido de la mirada",
+   "ejemplo": "La vista va de aquí hacia allí.",
+   "principal": "D03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "IM15",
+   "dominio": "IM",
+   "concepto": "escala del mapa",
+   "ejemplo": "Esto son quinientos metros.",
+   "principal": "B15",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "IM16",
+   "dominio": "IM",
+   "concepto": "símbolos del mapa",
+   "ejemplo": "Los puntos azules son fuentes.",
+   "principal": "D05",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "IM17",
+   "dominio": "IM",
+   "concepto": "usted está aquí",
+   "ejemplo": "Usted está aquí.",
+   "principal": "D01",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "D12"
+   },
+   "notas": "Un brazo señala el mapa; el otro, a la persona."
+  },
+  {
+   "id": "IM18",
+   "dominio": "IM",
+   "concepto": "origen y destino",
+   "ejemplo": "De la estación al museo.",
+   "principal": "B16",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B16"
+   }
+  },
+  {
+   "id": "IM19",
+   "dominio": "IM",
+   "concepto": "zona de servicio",
+   "ejemplo": "Da servicio a toda esta zona.",
+   "principal": "D04",
+   "otro": {
+    "papel": "acompana"
+   }
+  },
+  {
+   "id": "CU01",
+   "dominio": "CU",
+   "concepto": "seguro",
+   "ejemplo": "Es una zona segura.",
+   "principal": "B19",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU02",
+   "dominio": "CU",
+   "concepto": "peligroso",
+   "ejemplo": "Es un cruce peligroso.",
+   "principal": "M21",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU03",
+   "dominio": "CU",
+   "concepto": "fácil",
+   "ejemplo": "Es muy sencillo.",
+   "principal": "M02",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Suave."
+  },
+  {
+   "id": "CU04",
+   "dominio": "CU",
+   "concepto": "largo",
+   "ejemplo": "Es un trámite largo.",
+   "principal": "D11",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "Lento."
+  },
+  {
+   "id": "CU05",
+   "dominio": "CU",
+   "concepto": "nuevo",
+   "ejemplo": "Es un servicio nuevo.",
+   "principal": "M15",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU06",
+   "dominio": "CU",
+   "concepto": "rápido",
+   "ejemplo": "Es rápido.",
+   "principal": "M28",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU07",
+   "dominio": "CU",
+   "concepto": "lento",
+   "ejemplo": "Va despacio.",
+   "principal": "M29",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU08",
+   "dominio": "CU",
+   "concepto": "tranquilo",
+   "ejemplo": "Es una calle tranquila.",
+   "principal": "B13",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU09",
+   "dominio": "CU",
+   "concepto": "concurrido",
+   "ejemplo": "Suele estar lleno de gente.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU10",
+   "dominio": "CU",
+   "concepto": "grande",
+   "ejemplo": "Es un recinto grande.",
+   "principal": "B03",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU11",
+   "dominio": "CU",
+   "concepto": "pequeño",
+   "ejemplo": "Es una plaza pequeña.",
+   "principal": "M25",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU12",
+   "dominio": "CU",
+   "concepto": "alto",
+   "ejemplo": "Es un edificio alto.",
+   "principal": "E16",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU13",
+   "dominio": "CU",
+   "concepto": "bajo",
+   "ejemplo": "El muro es bajo.",
+   "principal": "E16",
+   "otro": {
+    "papel": "libre"
+   },
+   "notas": "A baja altura."
+  },
+  {
+   "id": "CU14",
+   "dominio": "CU",
+   "concepto": "ancho",
+   "ejemplo": "La calle es ancha.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU15",
+   "dominio": "CU",
+   "concepto": "estrecho",
+   "ejemplo": "El paso es estrecho.",
+   "principal": "B02",
+   "otro": {
+    "papel": "espejo"
+   },
+   "notas": "Las pinzas, lo más juntas que permite la distancia mínima entre brazos."
+  },
+  {
+   "id": "CU16",
+   "dominio": "CU",
+   "concepto": "recto",
+   "ejemplo": "El tramo es recto.",
+   "principal": "E04",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU17",
+   "dominio": "CU",
+   "concepto": "sinuoso",
+   "ejemplo": "La carretera es sinuosa.",
+   "principal": "E11",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU18",
+   "dominio": "CU",
+   "concepto": "llano",
+   "ejemplo": "El terreno es llano.",
+   "principal": "E19",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU19",
+   "dominio": "CU",
+   "concepto": "empinado",
+   "ejemplo": "La calle es empinada.",
+   "principal": "E08",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU20",
+   "dominio": "CU",
+   "concepto": "fijo",
+   "ejemplo": "El horario es fijo.",
+   "principal": "E17",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU21",
+   "dominio": "CU",
+   "concepto": "variable",
+   "ejemplo": "El precio varía.",
+   "principal": "M27",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU22",
+   "dominio": "CU",
+   "concepto": "restringido",
+   "ejemplo": "El acceso es restringido.",
+   "principal": "M03",
+   "otro": {
+    "papel": "libre"
+   }
+  },
+  {
+   "id": "CU23",
+   "dominio": "CU",
+   "concepto": "unido",
+   "ejemplo": "Los dos barrios están unidos.",
+   "principal": "B04",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU24",
+   "dominio": "CU",
+   "concepto": "separado",
+   "ejemplo": "Están en edificios distintos.",
+   "principal": "B05",
+   "otro": {
+    "papel": "espejo"
+   }
+  },
+  {
+   "id": "CU25",
+   "dominio": "CU",
+   "concepto": "distinto",
+   "ejemplo": "Son trámites distintos.",
+   "principal": "B06",
+   "otro": {
+    "papel": "contrapunto",
+    "primitiva": "B06"
+   }
+  }
+ ],
+ "comprobacion": {
+  "fecha": "2026-11-16",
+  "velocidad_grados_s": 110.0,
+  "distancia_entre_bases_mm": 500.0,
+  "brazos": [
+   "izq",
+   "der"
+  ],
+  "nota": "montaje y velocidad de los brazos reales; sin hardware"
+ }
+}

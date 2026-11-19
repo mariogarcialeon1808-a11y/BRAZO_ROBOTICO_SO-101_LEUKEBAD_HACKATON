@@ -1,0 +1,53 @@
+{
+  "verificado": "2026-11-14",
+  "fuentes": [
+    {
+      "id": "seg",
+      "url": "https://github.com/LuMen-ze/Semantic-Gesticulator-Official",
+      "papel": "gestos semánticos con descripción y movimiento BVH",
+      "estado_local": "dos clips reales, catálogo XLSX y licencia PDF; importación y ritmo probados",
+      "licencia": "MOCCA SeG: investigación no comercial, sin redistribución; consultar PDF",
+      "formato": "BVH",
+      "clips": [
+        {
+          "archivo": "ARMS_ENCOMPASS-1.bvh",
+          "hombro": "LeftShoulder",
+          "muneca": "LeftWrist",
+          "inicio": 50,
+          "fin": 135
+        },
+        {
+          "archivo": "ARMS_RAISE_TOWORDS_SKY-1.bvh",
+          "hombro": "LeftShoulder",
+          "muneca": "LeftWrist",
+          "inicio": 30,
+          "fin": 95
+        }
+      ],
+      "recortes": "selección inicial por inspección cinemática, pendiente de valoración humana"
+    },
+    {
+      "id": "beat2",
+      "url": "https://huggingface.co/datasets/haiyangliu0/BEAT2",
+      "papel": "variación de movimiento y relación habla-gesto; EMAGE es un modelo distinto",
+      "estado_local": "un clip español real descargado; rotaciones transformadas mediante FK humana nominal propia; forma y ritmo compilados al SO-101; no betas ni malla exacta",
+      "formato": "SMPL-X NPZ: conversión offline a joints_xyz",
+      "licencia": "verificar términos de cada recurso y del modelo corporal; no inferirlos de la licencia del código"
+    },
+    {
+      "id": "grounded-gestures-2025",
+      "url": "https://groundedgestures.github.io/",
+      "papel": "referencias espaciales; HumanML3D y MM-Conv",
+      "estado_local": "excluido: página sin enlaces operativos Data/Code al verificar",
+      "formato": "no tratar 263 características HumanML3D como coordenadas XYZ"
+    },
+    {
+      "id": "mm-conv-sgs-hsi-2026",
+      "url": "https://huggingface.co/datasets/hsi-workshop/referential-gesture-challenge",
+      "paper": "https://arxiv.org/abs/2610.03105",
+      "papel": "movimiento referencial con objetivo 3D, mano dominante y tiempos",
+      "estado_local": "un clip MM-Conv real descargado; FK nominal propia, forma y ritmo compilados al SO-101; sin acceso a scene graph en ejecución",
+      "regla": "objetivos y etiquetas del corpus son referencias offline; en despliegue los objetivos proceden de sensores y calibración reales"
+    }
+  ]
+}
